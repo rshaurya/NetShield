@@ -1,0 +1,17 @@
+# API
+fastapi
+uvicorn
+python-dotenv
+pydantic
+
+# ML
+scikit-learn
+pandas
+numpy
+joblib
+
+# HTTP Requests (for VirusTotal)
+requests
+
+# Frontend
+streamlit
