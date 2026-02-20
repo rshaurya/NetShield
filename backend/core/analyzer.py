@@ -1,64 +1,94 @@
-import argparse # For command line interface (lack of frontend, we can test via CLI)
+import argparse
 import json
 
-from feature_extractor import extract_features
-from ml_model import predict_url
-from virustotal import check_virustotal
+from backend.core.feature_extractor import extract_features
+from backend.core.ml_model import predict_url_full
+from backend.core.virustotal import check_virustotal
+
 
 def analyze_url(url: str) -> dict:
     """
-    The main Tiered Analysis pipeline.
+    NetShield Tiered Security Pipeline
+    Tier 1 → Local ML
+    Tier 2 → VirusTotal (only when needed)
     """
-    # 1. Extract lexical features using predefined function
+
+    
     features = extract_features(url)
+
     
-    # 2. Get local machine learning prediction
-    ml_prediction, confidence_score = predict_url(features)
+    prediction, confidence, reasons = predict_url_full(url, features)
+
     
-    # 3. The Confidence Gate Logic
-    if confidence_score > 0.60:
-        # High Certainty: Return the local ML result
+
+    confidence_percent = round(confidence * 100, 2)
+
+    # HIGH CONFIDENCE : Skip API
+    if confidence >= 0.90 or confidence <= 0.10:
         return {
             "url": url,
-            "final_prediction": ml_prediction,
-            "confidence": round(confidence_score * 100, 2),
-            "source": "Local ML (NetShield Tier 1)",
-            "details": "Model confidence was high enough to skip API call."
-        }
-    else:
-        # Low Certainty: Fallback to External Threat Intelligence
-        vt_result = check_virustotal(url)
-        
-        # If VT fails or has no data, we fallback to the uncertain ML prediction
-        if "error" in vt_result or vt_result.get("prediction") == "Unknown":
-            return {
-                "url": url,
-                "final_prediction": ml_prediction,
-                "confidence": round(confidence_score * 100, 2),
-                "source": "Local ML (Fallback)",
-                "details": f"API check failed or had no data. Relying on uncertain ML prediction. API Note: {vt_result.get('message', 'N/A')}"
-            }
-            
-        return {
-            "url": url,
-            "final_prediction": vt_result["prediction"],
-            "confidence": "N/A (External Verification)",
-            "source": "VirusTotal API (NetShield Tier 2)",
-            "details": f"Flagged as malicious by {vt_result['malicious_flags']} out of {vt_result['total_scans']} security vendors."
+            "final_prediction": prediction,
+            "confidence": confidence_percent,
+            "source": "Local ML (Tier 1)",
+            "risk_factors": reasons,
+            "details": "High confidence prediction. API skipped."
         }
 
-# Command Line Interface (CLI) configuration
+    
+
+    vt_result = check_virustotal(url)
+
+    # If VirusTotal fails : fallback to ML
+    if not vt_result or "error" in vt_result:
+        return {
+            "url": url,
+            "final_prediction": prediction,
+            "confidence": confidence_percent,
+            "source": "Local ML (Fallback)",
+            "risk_factors": reasons,
+            "details": "VirusTotal unavailable. Using ML result."
+        }
+
+    # If VirusTotal has no data
+    if vt_result.get("prediction") == "Unknown":
+        return {
+            "url": url,
+            "final_prediction": prediction,
+            "confidence": confidence_percent,
+            "source": "Local ML (No VT Data)",
+            "risk_factors": reasons,
+            "details": "No reputation data found."
+        }
+
+
+    return {
+        "url": url,
+        "final_prediction": vt_result["prediction"],
+        "confidence": "External Verification",
+        "source": "VirusTotal (Tier 2)",
+        "risk_factors": reasons,
+        "details": f"{vt_result.get('malicious_flags', 0)} vendors flagged this URL."
+    }
+
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="NetShield URL Analyzer - CLI Testing")
-    parser.add_argument("-u", "--url", required=True, help="The URL string you want to analyze")
+    parser = argparse.ArgumentParser(
+        description="NetShield URL Analyzer - CLI Testing"
+    )
+    parser.add_argument(
+        "-u",
+        "--url",
+        required=True,
+        help="The URL string you want to analyze"
+    )
+
     args = parser.parse_args()
-    
+
     print(f"\n[NetShield] Analyzing URL: {args.url}")
-    print("-" * 50)
-    
-    # Run the analysis
+    print("-" * 60)
+
     result = analyze_url(args.url)
-    
-    # Print the result nicely formatted as JSON
+
     print(json.dumps(result, indent=4))
-    print("-" * 50)
+    print("-" * 60)

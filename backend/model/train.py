@@ -1,6 +1,5 @@
-import sys
+
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 import numpy as np
@@ -8,7 +7,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
-from core.feature_extractor import extract_features
+
+from backend.core.feature_extractor import extract_features, FEATURE_ORDER
 
 def normalize_url(url: str) -> str:
     url = str(url).strip()
@@ -20,10 +20,51 @@ def normalize_url(url: str) -> str:
 
 def train_and_save_model():
     print("Loading dataset...")
-    df = pd.read_csv(
-        "backend/model/malicious_phish.csv",
-        on_bad_lines='skip'
-    )
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_PATH = os.path.join(BASE_DIR, "malicious_phish.csv")
+
+    df = pd.read_csv(DATA_PATH, on_bad_lines='skip')
+    print(f"Total URLs: {len(df)}")
+    print(df['type'].value_counts())
+
+    
+    tranco_path = os.path.join(BASE_DIR, "tranco_top10k.csv")
+
+    if os.path.exists(tranco_path):
+        tranco_df = pd.read_csv(tranco_path, header=None)
+
+        
+        tranco_domains = tranco_df[1].tolist()
+
+        tranco_extra = pd.DataFrame({
+            "url": tranco_domains,
+            "type": "benign"
+        })
+
+        df = pd.concat([df, tranco_extra], ignore_index=True)
+        print(f"Added {len(tranco_domains)} real benign domains from Tranco.")
+        
+    extra_safe_urls = [
+        "google.com",
+        "facebook.com",
+        "microsoft.com",
+        "github.com",
+        "amazon.com",
+        "youtube.com",
+        "wikipedia.org",
+        "linkedin.com",
+        "apple.com",
+        "stackoverflow.com",
+        "gmail.com",
+        "instagram.com"
+    ]
+
+    extra_df = pd.DataFrame({
+        "url": extra_safe_urls,
+        "type": "benign"
+    })
+
+    df = pd.concat([df, extra_df], ignore_index=True)
     print(f"Total URLs: {len(df)}")
     print(df['type'].value_counts())
 
@@ -37,9 +78,12 @@ def train_and_save_model():
 
     print("\nExtracting features...")
     features = []
+    from backend.core.feature_extractor import FEATURE_ORDER
+
     for url in df['url']:
         f = extract_features(url)
-        features.append(list(f.values()))
+        ordered_features = [f[key] for key in FEATURE_ORDER]
+        features.append(ordered_features)
 
     X = np.array(features)
     y = df['label'].values
@@ -50,7 +94,10 @@ def train_and_save_model():
 
     print("\nTraining Random Forest...")
     model = RandomForestClassifier(
-        n_estimators=100,
+        n_estimators=500,   
+        max_depth=None,     
+        min_samples_split=5,
+        min_samples_leaf=2,
         random_state=42,
         n_jobs=-1,
         class_weight='balanced'
@@ -64,7 +111,12 @@ def train_and_save_model():
         target_names=['Benign', 'Malicious']
     ))
 
-    joblib.dump(model, "backend/model/url_model.pkl")
-    print("Model saved!")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    MODEL_SAVE_PATH = os.path.join(BASE_DIR, "url_model.pkl")
+
+    joblib.dump(model, MODEL_SAVE_PATH)
+    print(f"Model saved at {MODEL_SAVE_PATH}")
+    
+    print("Model classes:", model.classes_)
 
 train_and_save_model()
