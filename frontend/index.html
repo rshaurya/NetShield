@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NetShield | Threat Intelligence</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .form-control::placeholder {
+        color: var(--text-dim);
+        opacity: 1;
+      }
+      :root {
+        --text-primary: #f8fafc; /* headings, values */
+        --text-secondary: #cbd5e1; /* body, descriptions */
+        --text-muted: #64748b; /* labels, meta */
+        --text-dim: #334155; /* placeholders, dividers */
+        --accent: #6366f1;
+        --accent-soft: #818cf8;
+      }
+      /* === Animated Shield === */
+      /* === Typewriter Cursor === */
+      .scan-status::after {
+        content: "|";
+        color: #6366f1;
+        font-weight: 300;
+        animation: cursorBlink 0.8s step-end infinite;
+        margin-left: 1px;
+      }
+
+      @keyframes cursorBlink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      .shield-icon-wrapper {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .shield-svg {
+        width: 38px;
+        height: 38px;
+        animation: shieldFloat 4s ease-in-out infinite;
+        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
+      }
+
+      .shield-path {
+        animation: shieldGlow 4s ease-in-out infinite;
+      }
+
+      @keyframes shieldFloat {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-3px);
+        }
+      }
+
+      @keyframes shieldGlow {
+        0%,
+        100% {
+          stroke: #6366f1;
+          fill: rgba(99, 102, 241, 0.08);
+        }
+        50% {
+          stroke: #818cf8;
+          fill: rgba(99, 102, 241, 0.18);
+        }
+      }
+
+      /* Ping ring around shield */
+      .shield-ping {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        animation: pingRing 3s ease-out infinite;
+      }
+
+      @keyframes pingRing {
+        0% {
+          transform: translate(-50%, -50%) scale(0.8);
+          opacity: 0.6;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1.6);
+          opacity: 0;
+        }
+      }
+
+      /* === Live Status Dot === */
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #4ade80;
+        display: inline-block;
+        animation: livePulse 2s ease-in-out infinite;
+      }
+
+      @keyframes livePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 0 5px rgba(74, 222, 128, 0);
+        }
+      }
+      /* Enterprise Cyber Aesthetic */
+      body {
+        background-color: #050505;
+        color: var(--text-secondary);
+        font-family: "Inter", system-ui, sans-serif;
+        background-image:
+          radial-gradient(
+            ellipse 80% 50% at 20% 20%,
+            rgba(99, 102, 241, 0.07) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 40% at 80% 80%,
+            rgba(139, 92, 246, 0.06) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 40% 30% at 60% 10%,
+            rgba(34, 211, 238, 0.04) 0%,
+            transparent 50%
+          );
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: -20%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(99, 102, 241, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        animation: floatOrb 12s ease-in-out infinite alternate;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -20%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(139, 92, 246, 0.07) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        animation: floatOrb 15s ease-in-out infinite alternate-reverse;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      @keyframes floatOrb {
+        0% {
+          transform: translate(0px, 0px) scale(1);
+        }
+        50% {
+          transform: translate(30px, -20px) scale(1.05);
+        }
+        100% {
+          transform: translate(-20px, 30px) scale(0.95);
+        }
+      }
+      .glass-card {
+        background: rgba(24, 24, 27, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow:
+          0 8px 32px 0 rgba(0, 0, 0, 0.4),
+          0 0 0 0.5px rgba(255, 255, 255, 0.04) inset;
+      }
+      .form-control {
+        background-color: rgba(9, 9, 11, 0.8);
+        border: 1px solid #3f3f46;
+        color: white;
+        border-radius: 8px;
+        padding: 0.85rem 1rem;
+      }
+      .form-control:focus {
+        background-color: #09090b;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        color: white;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: white;
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+        border-radius: 8px;
+        border: none;
+        padding: 0.85rem 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 0.3px;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #4f46e5, #4338ca);
+        transform: translateY(-1px);
+        box-shadow:
+          0 4px 12px rgba(99, 102, 241, 0.4),
+          0 0 20px rgba(99, 102, 241, 0.2);
+      }
+      .btn-primary:active {
+        transform: translateY(0px) scale(0.98);
+      }
+      /* === Button Ripple === */
+      .btn-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: rippleEffect 0.6s linear;
+        pointer-events: none;
+      }
+
+      @keyframes rippleEffect {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+
+      /* === Button Idle Pulse === */
+      @keyframes idlePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+        }
+      }
+
+      .btn-primary.idle-pulse {
+        animation: idlePulse 2.5s ease-in-out infinite;
+      }
+
+      /* === Scanning state === */
+      .btn-primary.scanning {
+        background: linear-gradient(135deg, #27272a, #18181b);
+        cursor: not-allowed;
+        box-shadow: none;
+        animation: none;
+      }
+
+      /* Result Animations and Badges */
+      #result-card {
+        display: none;
+        margin-top: 1.5rem;
+        opacity: 0;
+        transform: translateY(16px);
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+
+      #result-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #result-card .row,
+      #result-card #confidence-container,
+      #result-card .p-3.rounded.border {
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+
+      #result-card.visible .row {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.1s;
+      }
+      #result-card.visible #confidence-container {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.2s;
+      }
+      #result-card.visible .p-3.rounded.border {
+        opacity: 1;
+        transform: translateY(0);
+        transition-delay: 0.3s;
+      }
+      .badge-safe {
+        background-color: rgba(22, 101, 52, 0.3);
+        color: #4ade80;
+        border: 1px solid #166534;
+        padding: 0.5em 1.2em;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .badge-danger {
+        background-color: rgba(127, 29, 29, 0.3);
+        color: #f87171;
+        border: 1px solid #7f1d1d;
+        padding: 0.5em 1.2em;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
+      }
+
+      /* Tech Data Font */
+      .tech-text {
+        font-family: "JetBrains Mono", monospace;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      /* Progress Bar Override */
+      .progress {
+        background-color: #27272a;
+        height: 8px;
+        border-radius: 4px;
+        overflow: visible;
+        position: relative;
+      }
+      .progress-bar {
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 4px;
+        position: relative;
+      }
+      .progress-bar::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: inherit;
+        box-shadow: 0 0 8px 3px currentColor;
+      }
+      #confidence-text {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+      }
+
+      #confidence-container .d-flex {
+        align-items: center;
+      }
+
+      /* History Table */
+      .table {
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+      }
+      .table th {
+        border-bottom: 1px solid #27272a;
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding-bottom: 0.75rem;
+        font-family: "Inter", sans-serif;
+      }
+      .table td {
+        border-bottom: none;
+        vertical-align: middle;
+        padding: 0.6rem 0.75rem;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .table td:first-child {
+        border-radius: 8px 0 0 8px;
+        border-left: 3px solid transparent;
+      }
+      .table td:last-child {
+        border-radius: 0 8px 8px 0;
+      }
+
+      /* Verdict row accent colors */
+      .row-safe td:first-child {
+        border-left: 3px solid rgba(74, 222, 128, 0.6);
+      }
+      .row-danger td:first-child {
+        border-left: 3px solid rgba(248, 113, 113, 0.6);
+      }
+
+      /* Row hover */
+      .table tbody tr {
+        transition: all 0.2s ease;
+      }
+      .table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      /* Row insert animation */
+      @keyframes rowSlideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .row-animate {
+        animation: rowSlideIn 0.35s ease forwards;
+      }
+      /* === Scanning Animation === */
+      .scan-wrapper {
+        padding: 1.2rem 1.5rem;
+        background: rgba(99, 102, 241, 0.04);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 12px;
+      }
+
+      .scan-bar-container {
+        position: relative;
+        height: 6px;
+        background: #18181b;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      .scan-line {
+        position: absolute;
+        top: 0;
+        left: -10%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(99, 102, 241, 0.4) 30%,
+          rgba(99, 102, 241, 1) 50%,
+          rgba(139, 92, 246, 0.8) 70%,
+          transparent 100%
+        );
+        border-radius: 6px;
+        animation: scanSweep 1.8s ease-in-out infinite;
+        box-shadow:
+          0 0 12px rgba(99, 102, 241, 0.8),
+          0 0 24px rgba(99, 102, 241, 0.3);
+      }
+
+      @keyframes scanSweep {
+        0% {
+          left: -40%;
+        }
+        100% {
+          left: 110%;
+        }
+      }
+
+      .scan-segments {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        gap: 3px;
+        padding: 0 2px;
+      }
+
+      .seg {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 2px;
+        animation: segPulse 1.8s ease-in-out infinite;
+      }
+
+      .seg:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .seg:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .seg:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .seg:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      .seg:nth-child(5) {
+        animation-delay: 0.4s;
+      }
+      .seg:nth-child(6) {
+        animation-delay: 0.5s;
+      }
+      .seg:nth-child(7) {
+        animation-delay: 0.6s;
+      }
+      .seg:nth-child(8) {
+        animation-delay: 0.7s;
+      }
+
+      @keyframes segPulse {
+        0%,
+        100% {
+          background: rgba(255, 255, 255, 0.03);
+        }
+        50% {
+          background: rgba(99, 102, 241, 0.15);
+        }
+      }
+
+      .scan-labels {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .scan-status {
+        color: #a1a1aa;
+        font-size: 0.82rem;
+        letter-spacing: 0.3px;
+      }
+
+      .scan-dots {
+        color: #6366f1;
+        font-size: 0.82rem;
+        letter-spacing: 2px;
+        min-width: 24px;
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column align-items-center py-5">
+    <div
+      class="container"
+      style="max-width: 700px; position: relative; z-index: 1"
+    >
+      <div class="glass-card mb-4">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="d-flex align-items-center gap-3">
+            <div class="shield-icon-wrapper">
+              <svg
+                class="shield-svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  class="shield-path"
+                  d="M12 2L3 6V12C3 16.97 7.02 21.61 12 23C16.98 21.61 21 16.97 21 12V6L12 2Z"
+                  stroke="#6366f1"
+                  stroke-width="1.5"
+                  fill="rgba(99,102,241,0.1)"
+                />
+                <path
+                  class="shield-check"
+                  d="M9 12L11 14L15 10"
+                  stroke="#6366f1"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <div class="shield-ping"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <h2
+                  class="fw-bold mb-0"
+                  style="
+                    font-family: &quot;Sora&quot;, sans-serif;
+                    letter-spacing: -0.5px;
+                  "
+                >
+                  NetShield
+                </h2>
+                <span
+                  class="badge ms-1"
+                  style="
+                    font-size: 0.65em;
+                    background: rgba(99, 102, 241, 0.15);
+                    color: #818cf8;
+                    border: 1px solid rgba(99, 102, 241, 0.3);
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                  >v1.0</span
+                >
+              </div>
+              <p
+                class="mb-0 mt-1"
+                style="
+                  font-size: 0.76rem;
+                  color: var(--text-muted);
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  letter-spacing: 0.5px;
+                "
+              >
+                Tiered Architecture URL Analysis Engine
+              </p>
+            </div>
+          </div>
+
+          <!-- Session Info -->
+          <div class="text-end">
+            <div
+              class="d-flex align-items-center gap-2 justify-content-end mb-1"
+            >
+              <span class="status-dot"></span>
+              <small
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 0.72rem;
+                  color: #4ade80;
+                "
+                >LIVE</small
+              >
+            </div>
+            <small
+              id="session-time"
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 0.72rem;
+                color: var(--text-dim);
+                display: block;
+              "
+              >SESSION</small
+            >
+            <small
+              id="session-clock"
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                font-size: 0.72rem;
+                color: var(--text-muted);
+              "
+            ></small>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div
+          style="
+            height: 1px;
+            background: linear-gradient(
+              90deg,
+              rgba(99, 102, 241, 0.3),
+              transparent
+            );
+            margin: 1rem 0 1.5rem 0;
+          "
+        ></div>
+
+        <form id="analyze-form" class="d-flex gap-2">
+          <input
+            type="text"
+            id="url-input"
+            class="form-control"
+            placeholder="facebook.com or https://facebook.com"
+            required
+          />
+          <button
+            type="submit"
+            class="btn btn-primary idle-pulse"
+            id="submit-btn"
+          >
+            <span id="btn-text">Scan</span>
+          </button>
+        </form>
+
+        <div id="loading" style="display: none; margin-top: 1.5rem">
+          <div class="scan-wrapper">
+            <div class="scan-bar-container">
+              <div class="scan-line"></div>
+              <div class="scan-segments">
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+                <div class="seg"></div>
+              </div>
+            </div>
+            <div class="scan-labels">
+              <span
+                style="
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 0.78rem;
+                  color: var(--text-dim);
+                  margin-right: 6px;
+                "
+                >SYS →</span
+              >
+              <span class="scan-status tech-text" id="scan-status-text"></span>
+              <span class="scan-dots tech-text" id="scan-dots"></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="result-card" class="glass-card mt-4 p-4 bg-transparent">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5
+              class="mb-0 fw-bold"
+              style="font-family: &quot;Sora&quot;, sans-serif"
+            >
+              Threat Intelligence Report
+            </h5>
+            <span id="verdict-badge"></span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <div
+                class="p-3 rounded"
+                style="background-color: rgba(255, 255, 255, 0.03)"
+              >
+                <small
+                  style="
+                    color: var(--text-muted);
+                    font-size: 0.72rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.6px;
+                    font-family: &quot;Inter&quot;, sans-serif;
+                  "
+                  >Detection Source</small
+                >
+                <span
+                  id="source-text"
+                  class="fw-bold"
+                  style="color: var(--text-primary); font-size: 0.95rem"
+                ></span>
+              </div>
+            </div>
+            <div class="col-6">
+              <div
+                class="p-3 rounded"
+                style="background-color: rgba(255, 255, 255, 0.03)"
+              >
+                <small
+                  style="
+                    color: var(--text-muted);
+                    font-size: 0.72rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.6px;
+                    font-family: &quot;Inter&quot;, sans-serif;
+                  "
+                  >Target URL</small
+                >
+                <span
+                  id="target-url-text"
+                  class="tech-text text-truncate d-block"
+                  style="color: var(--accent-soft)"
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4" id="confidence-container">
+            <div class="d-flex justify-content-between mb-1">
+              <small
+                class="text-secondary"
+                style="
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  letter-spacing: 0.3px;
+                  font-size: 0.78rem;
+                  text-transform: uppercase;
+                "
+                >Model Confidence Score</small
+              >
+              <small id="confidence-text" class="fw-bold text-light"></small>
+            </div>
+            <div class="progress">
+              <div
+                id="confidence-bar"
+                class="progress-bar bg-primary"
+                role="progressbar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <div
+            class="p-3 rounded border border-secondary border-opacity-25"
+            style="background-color: rgba(0, 0, 0, 0.2)"
+          >
+            <small
+              style="
+                color: var(--text-muted);
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+              "
+              >Analysis Details</small
+            >
+            <span
+              id="details-text"
+              style="
+                font-family: &quot;JetBrains Mono&quot;, monospace;
+                color: var(--text-secondary);
+                font-size: 0.84rem;
+                line-height: 1.7;
+              "
+            ></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6
+            class="fw-bold mb-0"
+            style="
+              font-family: &quot;Sora&quot;, sans-serif;
+              font-size: 0.85rem;
+              color: #71717a;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            "
+          >
+            Session Scan History
+          </h6>
+          <span
+            id="scan-count"
+            class="tech-text"
+            style="font-size: 0.78rem; color: var(--text-muted)"
+            >0 scans</span
+          >
+        </div>
+        <div class="table-responsive">
+          <table class="table table-borderless table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width: 50%">URL</th>
+                <th>Verdict</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody id="history-body">
+              <tr id="empty-row">
+                <td
+                  colspan="3"
+                  class="text-center py-4"
+                  style="
+                    color: var(--text-dim);
+                    font-size: 0.82rem;
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    background: transparent !important;
+                    border: none;
+                  "
+                >
+                  — no scans yet —
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("analyze-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const urlInput = document.getElementById("url-input").value;
+          const submitBtn = document.getElementById("submit-btn");
+          const loading = document.getElementById("loading");
+          const resultCard = document.getElementById("result-card");
+
+          // Loading State
+          submitBtn.disabled = true;
+          loading.style.display = "block";
+          startScanAnimation();
+          document.getElementById("btn-text").textContent = "Scanning...";
+          submitBtn.classList.remove("idle-pulse");
+          submitBtn.classList.add("scanning");
+          resultCard.style.display = "none";
+          resultCard.classList.remove("visible");
+          document.getElementById("confidence-bar").style.width = "0%";
+
+          try {
+            const response = await fetch("http://127.0.0.1:8000/api/analyze", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: urlInput }),
+            });
+
+            const data = await response.json();
+
+            // Populate UI
+            document.getElementById("source-text").textContent = data.source;
+            document.getElementById("details-text").textContent = data.details;
+            document.getElementById("target-url-text").textContent = urlInput;
+
+            // Handle Verdict
+            const badge = document.getElementById("verdict-badge");
+            let verdictHtml = "";
+            if (data.final_prediction === "Safe") {
+              badge.className = "badge-safe";
+              badge.innerHTML = "✅ SAFE";
+              verdictHtml = "<span class='text-success'>Safe</span>";
+            } else {
+              badge.className = "badge-danger";
+              badge.innerHTML = "🚨 MALICIOUS";
+              verdictHtml =
+                "<span class='text-danger fw-bold'>Malicious</span>";
+            }
+
+            // Handle Confidence Score Animation
+            const confContainer = document.getElementById(
+              "confidence-container",
+            );
+            if (typeof data.confidence === "number") {
+              confContainer.style.display = "block";
+              document.getElementById("confidence-text").textContent =
+                `${data.confidence}%`;
+              setTimeout(() => {
+                document.getElementById("confidence-bar").style.width =
+                  `${data.confidence}%`;
+                // Change color based on score
+                const bar = document.getElementById("confidence-bar");
+                if (data.confidence > 90) {
+                  bar.className = "progress-bar";
+                  bar.style.background =
+                    "linear-gradient(90deg, #16a34a, #4ade80)";
+                  bar.style.boxShadow =
+                    "0 0 12px rgba(74, 222, 128, 0.5), 0 0 24px rgba(74, 222, 128, 0.2)";
+                } else if (data.confidence > 70) {
+                  bar.className = "progress-bar";
+                  bar.style.background =
+                    "linear-gradient(90deg, #d97706, #fbbf24)";
+                  bar.style.boxShadow =
+                    "0 0 12px rgba(251, 191, 36, 0.5), 0 0 24px rgba(251, 191, 36, 0.2)";
+                } else {
+                  bar.className = "progress-bar";
+                  bar.style.background =
+                    "linear-gradient(90deg, #b91c1c, #f87171)";
+                  bar.style.boxShadow =
+                    "0 0 12px rgba(248, 113, 113, 0.5), 0 0 24px rgba(248, 113, 113, 0.2)";
+                }
+              }, 100);
+            } else {
+              // Hide progress bar if VT was used (confidence is "N/A")
+              confContainer.style.display = "none";
+            }
+
+            // Add to History Table
+            // Add to History Table
+            const historyBody = document.getElementById("history-body");
+
+            // Remove empty state row if present
+            const emptyRow = document.getElementById("empty-row");
+            if (emptyRow) emptyRow.remove();
+
+            // Determine row class based on verdict
+            const rowClass =
+              data.final_prediction === "Safe" ? "row-safe" : "row-danger";
+
+            const newRow = `
+    <tr class="${rowClass} row-animate">
+        <td class="tech-text text-truncate" style="max-width: 200px; font-size: 0.8rem;">${urlInput}</td>
+        <td>${verdictHtml}</td>
+        <td><small style="color: var(--text-muted); font-family: 'Inter', sans-serif;">${data.source.split(" ")[0]}</small></td>
+    </tr>
+`;
+            historyBody.insertAdjacentHTML("afterbegin", newRow);
+
+            // Update scan counter
+            const scanCount = historyBody.querySelectorAll("tr").length;
+            document.getElementById("scan-count").textContent =
+              `${scanCount} scan${scanCount > 1 ? "s" : ""}`;
+
+            resultCard.style.display = "block";
+            // Trigger animation on next frame
+            setTimeout(() => {
+              resultCard.classList.add("visible");
+            }, 10);
+            document.getElementById("url-input").value = ""; // Clear input
+          } catch (error) {
+            alert("Error connecting to the backend. Is FastAPI running?");
+          } finally {
+            submitBtn.disabled = false;
+            loading.style.display = "none";
+            stopScanAnimation();
+            document.getElementById("btn-text").textContent = "Scan";
+            submitBtn.classList.remove("scanning");
+            submitBtn.classList.add("idle-pulse");
+          }
+        });
+      // === Scanning Status Typewriter ===
+      const scanPhrases = [
+        "Extracting lexical features",
+        "Consulting ML engine",
+        "Analyzing URL structure",
+        "Checking entropy patterns",
+        "Cross-referencing threat DB",
+        "Computing risk score",
+      ];
+
+      let scanInterval = null;
+      let dotInterval = null;
+      let phraseIndex = 0;
+      let dotCount = 0;
+
+      function startScanAnimation() {
+        phraseIndex = 0;
+        dotCount = 0;
+        const statusEl = document.getElementById("scan-status-text");
+        const dotsEl = document.getElementById("scan-dots");
+
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeTimeout = null;
+
+        function typeWriter() {
+          const currentPhrase = scanPhrases[phraseIndex];
+
+          if (!isDeleting) {
+            // Typing forward
+            charIndex++;
+            statusEl.textContent = currentPhrase.substring(0, charIndex);
+
+            if (charIndex === currentPhrase.length) {
+              // Finished typing — pause then start deleting
+              isDeleting = true;
+              typeTimeout = setTimeout(typeWriter, 1400);
+            } else {
+              // Vary speed slightly for natural feel
+              const speed = 35 + Math.random() * 25;
+              typeTimeout = setTimeout(typeWriter, speed);
+            }
+          } else {
+            // Deleting
+            charIndex--;
+            statusEl.textContent = currentPhrase.substring(0, charIndex);
+
+            if (charIndex === 0) {
+              // Move to next phrase
+              isDeleting = false;
+              phraseIndex = (phraseIndex + 1) % scanPhrases.length;
+              typeTimeout = setTimeout(typeWriter, 200);
+            } else {
+              // Delete faster than typing
+              typeTimeout = setTimeout(typeWriter, 18);
+            }
+          }
+        }
+
+        // Start typewriter
+        typeWriter();
+
+        // Store timeout reference so we can clear it
+        scanInterval = { clear: () => clearTimeout(typeTimeout) };
+
+        // Animate dots separately
+        dotInterval = setInterval(() => {
+          dotCount = (dotCount + 1) % 4;
+          dotsEl.textContent = ".".repeat(dotCount);
+        }, 400);
+      }
+
+      function stopScanAnimation() {
+        if (scanInterval && scanInterval.clear) scanInterval.clear();
+        clearInterval(dotInterval);
+        document.getElementById("scan-status-text").textContent = "";
+        document.getElementById("scan-dots").textContent = "";
+      }
+      // === Button Ripple Effect ===
+      const submitBtn = document.getElementById("submit-btn");
+
+      submitBtn.addEventListener("click", function (e) {
+        // Create ripple
+        const ripple = document.createElement("span");
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${x}px;
+        top: ${y}px;
+    `;
+        ripple.classList.add("btn-ripple");
+        this.appendChild(ripple);
+
+        // Remove ripple after animation
+        setTimeout(() => ripple.remove(), 600);
+      });
+      // === Session Clock ===
+      const sessionStart = new Date();
+
+      function formatDuration(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hrs = Math.floor(totalSeconds / 3600)
+          .toString()
+          .padStart(2, "0");
+        const mins = Math.floor((totalSeconds % 3600) / 60)
+          .toString()
+          .padStart(2, "0");
+        const secs = (totalSeconds % 60).toString().padStart(2, "0");
+        return `${hrs}:${mins}:${secs}`;
+      }
+
+      function formatStartTime(date) {
+        return date.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+      }
+
+      // Show session start time
+      document.getElementById("session-time").textContent =
+        `STARTED ${formatStartTime(sessionStart)}`;
+
+      // Live elapsed timer
+      setInterval(() => {
+        const elapsed = Date.now() - sessionStart.getTime();
+        document.getElementById("session-clock").textContent =
+          formatDuration(elapsed);
+      }, 1000);
+    </script>
+  </body>
+</html>
