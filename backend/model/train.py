@@ -116,7 +116,7 @@ def train_and_save_model():
 
     print("\nTraining Random Forest...")
     model = RandomForestClassifier(
-        n_estimators=500,   
+        n_estimators=100,   
         max_depth=None,     
         min_samples_split=5,
         min_samples_leaf=2,
