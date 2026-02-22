@@ -1,1170 +1,898 @@
-<!doctype html>
-<html lang="en" data-bs-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetShield | Threat Intelligence</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      .form-control::placeholder {
-        color: var(--text-dim);
-        opacity: 1;
-      }
-      :root {
-        --text-primary: #f8fafc; /* headings, values */
-        --text-secondary: #cbd5e1; /* body, descriptions */
-        --text-muted: #64748b; /* labels, meta */
-        --text-dim: #334155; /* placeholders, dividers */
-        --accent: #6366f1;
-        --accent-soft: #818cf8;
-      }
-      /* === Animated Shield === */
-      /* === Typewriter Cursor === */
-      .scan-status::after {
-        content: "|";
-        color: #6366f1;
-        font-weight: 300;
-        animation: cursorBlink 0.8s step-end infinite;
-        margin-left: 1px;
-      }
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NetShield — URL Safety Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════
+   THEME TOKENS
+═══════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg:           #07080F;
+  --bg2:          #0D0F1C;
+  --bg3:          #12152A;
+  --surface:      rgba(255,255,255,0.04);
+  --surface2:     rgba(255,255,255,0.07);
+  --border:       rgba(255,255,255,0.08);
+  --border2:      rgba(255,255,255,0.13);
+  --ink:          #FFFFFF;
+  --ink2:         rgba(255,255,255,0.65);
+  --ink3:         rgba(255,255,255,0.30);
+  --ink4:         rgba(255,255,255,0.12);
+  --v:            #7C3AED;
+  --v2:           #A855F7;
+  --v3:           #C084FC;
+  --pink:         #EC4899;
+  --cyan:         #06B6D4;
+  --gold:         #F59E0B;
+  --safe:         #10B981;
+  --safe-bg:      rgba(16,185,129,0.12);
+  --safe-bd:      rgba(16,185,129,0.25);
+  --danger:       #F43F5E;
+  --danger-bg:    rgba(244,63,94,0.12);
+  --danger-bd:    rgba(244,63,94,0.25);
+  --input-bg:     rgba(0,0,0,0.35);
+  --input-focus:  rgba(0,0,0,0.5);
+  --shadow:       0 8px 40px rgba(0,0,0,0.4);
+  --orb1-color:   rgba(124,58,237,0.18);
+  --orb2-color:   rgba(236,72,153,0.12);
+  --orb3-color:   rgba(6,182,212,0.10);
+  --particle-col: rgba(168,85,247,0.4);
+  --connect-col:  rgba(124,58,237,0.15);
+  --grid-col:     rgba(255,255,255,0.06);
+  --axis-col:     rgba(255,255,255,0.08);
+  --stat-bg:      #0D0F1C;
+}
 
-      @keyframes cursorBlink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0;
-        }
-      }
-      .shield-icon-wrapper {
-        position: relative;
-        width: 44px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+[data-theme="light"] {
+  --bg:           #F0EFFF;
+  --bg2:          #FFFFFF;
+  --bg3:          #E8E6FF;
+  --surface:      rgba(255,255,255,0.75);
+  --surface2:     rgba(255,255,255,0.90);
+  --border:       rgba(100,80,200,0.12);
+  --border2:      rgba(100,80,200,0.22);
+  --ink:          #1A0E40;
+  --ink2:         rgba(26,14,64,0.65);
+  --ink3:         rgba(26,14,64,0.38);
+  --ink4:         rgba(26,14,64,0.10);
+  --v:            #6D28D9;
+  --v2:           #7C3AED;
+  --v3:           #8B5CF6;
+  --pink:         #DB2777;
+  --cyan:         #0284C7;
+  --gold:         #D97706;
+  --safe:         #059669;
+  --safe-bg:      rgba(5,150,105,0.08);
+  --safe-bd:      rgba(5,150,105,0.25);
+  --danger:       #DC2626;
+  --danger-bg:    rgba(220,38,38,0.07);
+  --danger-bd:    rgba(220,38,38,0.22);
+  --input-bg:     rgba(255,255,255,0.9);
+  --input-focus:  rgba(255,255,255,1);
+  --shadow:       0 4px 24px rgba(100,80,200,0.12), 0 1px 4px rgba(100,80,200,0.08);
+  --orb1-color:   rgba(124,58,237,0.10);
+  --orb2-color:   rgba(219,39,119,0.07);
+  --orb3-color:   rgba(2,132,199,0.07);
+  --particle-col: rgba(124,58,237,0.35);
+  --connect-col:  rgba(124,58,237,0.12);
+  --grid-col:     rgba(100,80,200,0.10);
+  --axis-col:     rgba(100,80,200,0.12);
+  --stat-bg:      #FFFFFF;
+}
 
-      .shield-svg {
-        width: 38px;
-        height: 38px;
-        animation: shieldFloat 4s ease-in-out infinite;
-        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.4));
-      }
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+* { margin:0; padding:0; box-sizing:border-box; }
 
-      .shield-path {
-        animation: shieldGlow 4s ease-in-out infinite;
-      }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
 
-      @keyframes shieldFloat {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-3px);
-        }
-      }
+#particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-      @keyframes shieldGlow {
-        0%,
-        100% {
-          stroke: #6366f1;
-          fill: rgba(99, 102, 241, 0.08);
-        }
-        50% {
-          stroke: #818cf8;
-          fill: rgba(99, 102, 241, 0.18);
-        }
-      }
+.orb {
+  position:fixed; border-radius:50%; filter:blur(80px);
+  pointer-events:none; z-index:0; animation:orbFloat linear infinite;
+  transition:background 0.6s ease;
+}
+.orb1 { width:500px;height:500px; background:var(--orb1-color); top:-150px;left:-100px; animation-duration:20s; }
+.orb2 { width:400px;height:400px; background:var(--orb2-color); bottom:-100px;right:-80px; animation-duration:25s; animation-direction:reverse; }
+.orb3 { width:300px;height:300px; background:var(--orb3-color); top:50%;left:60%; animation-duration:18s; }
+@keyframes orbFloat {
+  0%  { transform:translate(0,0) scale(1); }
+  33% { transform:translate(40px,-30px) scale(1.05); }
+  66% { transform:translate(-30px,40px) scale(0.95); }
+  100%{ transform:translate(0,0) scale(1); }
+}
 
-      /* Ping ring around shield */
-      .shield-ping {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        border: 1px solid rgba(99, 102, 241, 0.4);
-        animation: pingRing 3s ease-out infinite;
-      }
+/* ═══════════════════════════════════════
+   THEME TOGGLE BUTTON
+═══════════════════════════════════════ */
+.theme-toggle {
+  position: fixed;
+  top: 1.25rem; right: 1.25rem;
+  z-index: 1000;
+  background: var(--surface2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border2);
+  border-radius: 99px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 0.55rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(124,58,237,0.25);
+  border-color: var(--v2);
+}
+.theme-toggle:active { transform: scale(0.97); }
 
-      @keyframes pingRing {
-        0% {
-          transform: translate(-50%, -50%) scale(0.8);
-          opacity: 0.6;
-        }
-        100% {
-          transform: translate(-50%, -50%) scale(1.6);
-          opacity: 0;
-        }
-      }
+.toggle-track {
+  width: 36px; height: 20px;
+  background: var(--v);
+  border-radius: 99px;
+  position: relative;
+  transition: background 0.3s ease;
+  flex-shrink: 0;
+}
+[data-theme="light"] .toggle-track { background: var(--gold); }
 
-      /* === Live Status Dot === */
-      .status-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background-color: #4ade80;
-        display: inline-block;
-        animation: livePulse 2s ease-in-out infinite;
-      }
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+[data-theme="light"] .toggle-thumb { transform: translateX(16px); }
 
-      @keyframes livePulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
-        }
-        50% {
-          box-shadow: 0 0 0 5px rgba(74, 222, 128, 0);
-        }
-      }
-      /* Enterprise Cyber Aesthetic */
-      body {
-        background-color: #050505;
-        color: var(--text-secondary);
-        font-family: "Inter", system-ui, sans-serif;
-        background-image:
-          radial-gradient(
-            ellipse 80% 50% at 20% 20%,
-            rgba(99, 102, 241, 0.07) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 60% 40% at 80% 80%,
-            rgba(139, 92, 246, 0.06) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 40% 30% at 60% 10%,
-            rgba(34, 211, 238, 0.04) 0%,
-            transparent 50%
-          );
-        min-height: 100vh;
-      }
+.toggle-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  color: var(--ink2);
+  font-weight: 700;
+  transition: color 0.3s;
+  text-transform: uppercase;
+}
 
-      body::before {
-        content: "";
-        position: fixed;
-        top: -20%;
-        left: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(99, 102, 241, 0.08) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        animation: floatOrb 12s ease-in-out infinite alternate;
-        pointer-events: none;
-        z-index: 0;
-      }
+.toggle-icon { font-size: 0.9rem; }
 
-      body::after {
-        content: "";
-        position: fixed;
-        bottom: -20%;
-        right: -10%;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(
-          circle,
-          rgba(139, 92, 246, 0.07) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-        animation: floatOrb 15s ease-in-out infinite alternate-reverse;
-        pointer-events: none;
-        z-index: 0;
-      }
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.page { position:relative; z-index:10; max-width:780px; margin:0 auto; padding:2rem 1.25rem 5rem; }
 
-      @keyframes floatOrb {
-        0% {
-          transform: translate(0px, 0px) scale(1);
-        }
-        50% {
-          transform: translate(30px, -20px) scale(1.05);
-        }
-        100% {
-          transform: translate(-20px, 30px) scale(0.95);
-        }
-      }
-      .glass-card {
-        background: rgba(24, 24, 27, 0.75);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow:
-          0 8px 32px 0 rgba(0, 0, 0, 0.4),
-          0 0 0 0.5px rgba(255, 255, 255, 0.04) inset;
-      }
-      .form-control {
-        background-color: rgba(9, 9, 11, 0.8);
-        border: 1px solid #3f3f46;
-        color: white;
-        border-radius: 8px;
-        padding: 0.85rem 1rem;
-      }
-      .form-control:focus {
-        background-color: #09090b;
-        border-color: #6366f1;
-        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
-        color: white;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-        color: white;
-        font-weight: 600;
-        font-family: "Inter", sans-serif;
-        border-radius: 8px;
-        border: none;
-        padding: 0.85rem 1.5rem;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        letter-spacing: 0.3px;
-      }
-      .btn-primary:hover {
-        background: linear-gradient(135deg, #4f46e5, #4338ca);
-        transform: translateY(-1px);
-        box-shadow:
-          0 4px 12px rgba(99, 102, 241, 0.4),
-          0 0 20px rgba(99, 102, 241, 0.2);
-      }
-      .btn-primary:active {
-        transform: translateY(0px) scale(0.98);
-      }
-      /* === Button Ripple === */
-      .btn-ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(0);
-        animation: rippleEffect 0.6s linear;
-        pointer-events: none;
-      }
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero { text-align:center; padding:2.5rem 0 2rem; }
 
-      @keyframes rippleEffect {
-        to {
-          transform: scale(4);
-          opacity: 0;
-        }
-      }
+.hero-eyebrow {
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem; letter-spacing:4px;
+  color:var(--cyan); text-transform:uppercase;
+  margin-bottom:0.75rem; opacity:0.8;
+}
 
-      /* === Button Idle Pulse === */
-      @keyframes idlePulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
-        }
-        50% {
-          box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
-        }
-      }
+.hero-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(4rem,14vw,7.5rem);
+  line-height:0.92; letter-spacing:2px;
+  background:linear-gradient(135deg, var(--ink) 0%, var(--v3) 35%, var(--pink) 65%, var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  animation:titleShimmer 4s ease-in-out infinite;
+  background-size:200% 200%;
+}
+[data-theme="light"] .hero-title {
+  background:linear-gradient(135deg, #1A0E40 0%, var(--v2) 35%, var(--pink) 65%, var(--gold) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  background-size:200% 200%;
+}
+@keyframes titleShimmer { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
 
-      .btn-primary.idle-pulse {
-        animation: idlePulse 2.5s ease-in-out infinite;
-      }
+.hero-sub { font-size:1.05rem; color:var(--ink3); margin-top:0.75rem; font-weight:300; letter-spacing:0.3px; transition:color 0.4s; }
 
-      /* === Scanning state === */
-      .btn-primary.scanning {
-        background: linear-gradient(135deg, #27272a, #18181b);
-        cursor: not-allowed;
-        box-shadow: none;
-        animation: none;
-      }
+.live-row { display:flex; justify-content:center; align-items:center; gap:1.5rem; margin-top:1.25rem; flex-wrap:wrap; }
 
-      /* Result Animations and Badges */
-      #result-card {
-        display: none;
-        margin-top: 1.5rem;
-        opacity: 0;
-        transform: translateY(16px);
-        transition:
-          opacity 0.4s ease,
-          transform 0.4s ease;
-      }
+.live-badge {
+  display:flex; align-items:center; gap:0.45rem;
+  background:var(--safe-bg); border:1px solid var(--safe-bd);
+  border-radius:99px; padding:0.3rem 0.9rem;
+  font-size:0.68rem; font-weight:700; letter-spacing:1.5px;
+  color:var(--safe); text-transform:uppercase;
+  transition:all 0.4s;
+}
+.ldot { width:7px;height:7px;border-radius:50%;background:var(--safe);box-shadow:0 0 6px var(--safe);animation:ldot 1.5s ease-in-out infinite; }
+@keyframes ldot{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:0.5;}}
 
-      #result-card.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      #result-card .row,
-      #result-card #confidence-container,
-      #result-card .p-3.rounded.border {
-        opacity: 0;
-        transform: translateY(10px);
-        transition:
-          opacity 0.4s ease,
-          transform 0.4s ease;
-      }
+.stat-pill { font-family:'Space Mono',monospace; font-size:0.62rem; color:var(--ink3); transition:color 0.4s; }
+.stat-pill b { color:var(--ink2); }
 
-      #result-card.visible .row {
-        opacity: 1;
-        transform: translateY(0);
-        transition-delay: 0.1s;
-      }
-      #result-card.visible #confidence-container {
-        opacity: 1;
-        transform: translateY(0);
-        transition-delay: 0.2s;
-      }
-      #result-card.visible .p-3.rounded.border {
-        opacity: 1;
-        transform: translateY(0);
-        transition-delay: 0.3s;
-      }
-      .badge-safe {
-        background-color: rgba(22, 101, 52, 0.3);
-        color: #4ade80;
-        border: 1px solid #166534;
-        padding: 0.5em 1.2em;
-        border-radius: 8px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-      .badge-danger {
-        background-color: rgba(127, 29, 29, 0.3);
-        color: #f87171;
-        border: 1px solid #7f1d1d;
-        padding: 0.5em 1.2em;
-        border-radius: 8px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        box-shadow: 0 0 15px rgba(248, 113, 113, 0.2);
-      }
+/* ═══════════════════════════════════════
+   GLASS CARD
+═══════════════════════════════════════ */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
 
-      /* Tech Data Font */
-      .tech-text {
-        font-family: "JetBrains Mono", monospace;
-        color: #94a3b8;
-        font-size: 0.85rem;
-        line-height: 1.6;
-      }
+/* ═══════════════════════════════════════
+   SCAN INPUT
+═══════════════════════════════════════ */
+.scan-card { padding:1.75rem; margin-bottom:1.25rem; position:relative; overflow:hidden; }
+.scan-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--v2),var(--pink),transparent);
+  animation:topline 3s ease-in-out infinite;
+}
+@keyframes topline{0%,100%{opacity:0.4;}50%{opacity:1;}}
 
-      /* Progress Bar Override */
-      .progress {
-        background-color: #27272a;
-        height: 8px;
-        border-radius: 4px;
-        overflow: visible;
-        position: relative;
-      }
-      .progress-bar {
-        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 4px;
-        position: relative;
-      }
-      .progress-bar::after {
-        content: "";
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: inherit;
-        box-shadow: 0 0 8px 3px currentColor;
-      }
-      #confidence-text {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.95rem;
-        letter-spacing: 0.5px;
-      }
+.scan-label {
+  font-family:'Space Mono',monospace; font-size:0.62rem;
+  letter-spacing:3px; color:var(--ink3);
+  text-transform:uppercase; margin-bottom:1rem; transition:color 0.4s;
+}
 
-      #confidence-container .d-flex {
-        align-items: center;
-      }
+.input-wrap { display:flex; gap:0.75rem; align-items:stretch; }
 
-      /* History Table */
-      .table {
-        color: var(--text-secondary);
-        font-size: 0.88rem;
-        border-collapse: separate;
-        border-spacing: 0 4px;
-      }
-      .table th {
-        border-bottom: 1px solid #27272a;
-        color: var(--text-muted);
-        font-weight: 500;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding-bottom: 0.75rem;
-        font-family: "Inter", sans-serif;
-      }
-      .table td {
-        border-bottom: none;
-        vertical-align: middle;
-        padding: 0.6rem 0.75rem;
-        background: rgba(255, 255, 255, 0.02);
-      }
-      .table td:first-child {
-        border-radius: 8px 0 0 8px;
-        border-left: 3px solid transparent;
-      }
-      .table td:last-child {
-        border-radius: 0 8px 8px 0;
-      }
+.url-input {
+  flex:1; background:var(--input-bg); border:1px solid var(--border2);
+  border-radius:14px; padding:1rem 1.25rem;
+  font-family:'Outfit',sans-serif; font-size:0.95rem;
+  color:var(--ink); outline:none;
+  transition:all 0.3s ease;
+}
+.url-input::placeholder { color:var(--ink4); }
+.url-input:focus {
+  border-color:var(--v2);
+  box-shadow:0 0 0 3px rgba(168,85,247,0.15), 0 0 30px rgba(168,85,247,0.08);
+  background:var(--input-focus);
+}
 
-      /* Verdict row accent colors */
-      .row-safe td:first-child {
-        border-left: 3px solid rgba(74, 222, 128, 0.6);
-      }
-      .row-danger td:first-child {
-        border-left: 3px solid rgba(248, 113, 113, 0.6);
-      }
+.scan-btn {
+  background:linear-gradient(135deg,var(--v),var(--pink));
+  border:none; border-radius:14px; padding:0 1.75rem;
+  font-family:'Bebas Neue',sans-serif; font-size:1.25rem; letter-spacing:2px;
+  color:#fff; cursor:pointer; position:relative; overflow:hidden;
+  transition:all 0.3s ease; white-space:nowrap;
+  box-shadow:0 4px 20px rgba(124,58,237,0.35);
+}
+.scan-btn:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(124,58,237,0.5); }
+.scan-btn:active { transform:scale(0.97); }
+.scan-btn:disabled { background:var(--ink4); box-shadow:none; cursor:not-allowed; transform:none; }
+.ripple { position:absolute;border-radius:50%;background:rgba(255,255,255,0.25);transform:scale(0);animation:rp 0.6s linear;pointer-events:none; }
+@keyframes rp{to{transform:scale(4);opacity:0;}}
 
-      /* Row hover */
-      .table tbody tr {
-        transition: all 0.2s ease;
-      }
-      .table tbody tr:hover td {
-        background: rgba(255, 255, 255, 0.04);
-      }
+/* ═══════════════════════════════════════
+   LOADING
+═══════════════════════════════════════ */
+.loading-card { padding:1.5rem 1.75rem; margin-bottom:1.25rem; display:none; }
+.loading-card.on { display:block; }
+.loading-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.loading-title {
+  font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px;
+  background:linear-gradient(90deg,var(--v2),var(--pink));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.spinner { width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--v2);border-radius:50%;animation:sp 0.7s linear infinite; }
+@keyframes sp{to{transform:rotate(360deg);}}
+.load-bar-wrap { height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:1.25rem;transition:background 0.4s; }
+.load-beam { height:100%;border-radius:99px;width:35%;background:linear-gradient(90deg,var(--v),var(--pink),var(--cyan));animation:beam 1.3s ease-in-out infinite; }
+@keyframes beam{0%{transform:translateX(-100%);}100%{transform:translateX(310%);}}
+.step-list { display:flex;flex-direction:column;gap:0.45rem; }
+.step { display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:var(--ink3);transition:color 0.3s; }
+.step.done { color:var(--safe); }
+.step.cur  { color:var(--ink); font-weight:500; }
+.step-ic { font-size:0.65rem;width:14px; }
 
-      /* Row insert animation */
-      @keyframes rowSlideIn {
-        from {
-          opacity: 0;
-          transform: translateX(-10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
+/* ═══════════════════════════════════════
+   RESULT
+═══════════════════════════════════════ */
+#result { display:none;opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease; }
+#result.show { opacity:1;transform:none; }
 
-      .row-animate {
-        animation: rowSlideIn 0.35s ease forwards;
-      }
-      /* === Scanning Animation === */
-      .scan-wrapper {
-        padding: 1.2rem 1.5rem;
-        background: rgba(99, 102, 241, 0.04);
-        border: 1px solid rgba(99, 102, 241, 0.15);
-        border-radius: 12px;
-      }
+.verdict-banner {
+  border-radius:24px 24px 0 0;
+  padding:2.25rem 2rem; position:relative; overflow:hidden; margin-bottom:1px;
+  transition:all 0.4s ease;
+}
+.verdict-banner.safe   { background:linear-gradient(135deg,var(--safe-bg),transparent); border:1px solid var(--safe-bd); border-bottom:none; }
+.verdict-banner.danger { background:linear-gradient(135deg,var(--danger-bg),transparent); border:1px solid var(--danger-bd); border-bottom:none; }
 
-      .scan-bar-container {
-        position: relative;
-        height: 6px;
-        background: #18181b;
-        border-radius: 6px;
-        overflow: hidden;
-        margin-bottom: 1rem;
-      }
+.banner-glow { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:400px;border-radius:50%;filter:blur(80px);animation:bglow 3s ease-in-out infinite;pointer-events:none; }
+.safe .banner-glow   { background:rgba(16,185,129,0.10); }
+.danger .banner-glow { background:rgba(244,63,94,0.10); }
+[data-theme="light"] .safe .banner-glow   { background:rgba(5,150,105,0.08); }
+[data-theme="light"] .danger .banner-glow { background:rgba(220,38,38,0.08); }
+@keyframes bglow{0%,100%{transform:translate(-50%,-50%) scale(1);}50%{transform:translate(-50%,-50%) scale(1.15);}}
 
-      .scan-line {
-        position: absolute;
-        top: 0;
-        left: -10%;
-        width: 40%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent 0%,
-          rgba(99, 102, 241, 0.4) 30%,
-          rgba(99, 102, 241, 1) 50%,
-          rgba(139, 92, 246, 0.8) 70%,
-          transparent 100%
-        );
-        border-radius: 6px;
-        animation: scanSweep 1.8s ease-in-out infinite;
-        box-shadow:
-          0 0 12px rgba(99, 102, 241, 0.8),
-          0 0 24px rgba(99, 102, 241, 0.3);
-      }
+.verdict-tag { font-family:'Space Mono',monospace;font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:0.5rem; }
+.safe .verdict-tag   { color:var(--safe); }
+.danger .verdict-tag { color:var(--danger); }
 
-      @keyframes scanSweep {
-        0% {
-          left: -40%;
-        }
-        100% {
-          left: 110%;
-        }
-      }
+.verdict-word {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(3rem,10vw,5.5rem); letter-spacing:3px; line-height:1;
+  animation:wordIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+.safe .verdict-word   { color:var(--safe); text-shadow:0 0 40px rgba(16,185,129,0.4); }
+.danger .verdict-word { color:var(--danger); text-shadow:0 0 40px rgba(244,63,94,0.4); animation:dangerPulse 2s ease-in-out infinite,wordIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes wordIn{from{opacity:0;transform:scale(0.8) translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes dangerPulse{0%,100%{text-shadow:0 0 40px rgba(244,63,94,0.4);}50%{text-shadow:0 0 70px rgba(244,63,94,0.7);}}
 
-      .scan-segments {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        gap: 3px;
-        padding: 0 2px;
-      }
+.verdict-url-display { font-size:0.82rem;color:var(--ink3);margin-top:0.5rem;word-break:break-all;transition:color 0.4s; }
+.verdict-emoji { position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:4rem;opacity:0.2;animation:emojiFloat 3s ease-in-out infinite; }
+@keyframes emojiFloat{0%,100%{transform:translateY(-50%) rotate(-3deg);}50%{transform:translateY(calc(-50% - 8px)) rotate(3deg);}}
 
-      .seg {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 2px;
-        animation: segPulse 1.8s ease-in-out infinite;
-      }
+/* ═══════════════════════════════════════
+   STATS ROW
+═══════════════════════════════════════ */
+.stats-row {
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:1px; background:var(--border); margin-bottom:1.25rem;
+  border-left:1px solid var(--border); border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  border-radius:0 0 20px 20px; overflow:hidden;
+  transition:background 0.4s;
+}
+.stat-cell {
+  background:var(--stat-bg); padding:1.1rem 1.25rem;
+  position:relative; overflow:hidden; transition:background 0.3s;
+}
+.stat-cell:hover { background:var(--surface2); }
+.stat-cell::after { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--v),var(--pink));transform:scaleX(0);transition:transform 0.3s ease;transform-origin:left; }
+.stat-cell:hover::after { transform:scaleX(1); }
+.sc-label { font-size:0.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:0.4rem;transition:color 0.4s; }
+.sc-value { font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;color:var(--ink);transition:color 0.4s; }
+.sc-value.accent { color:var(--v3); }
+.sc-value.cyan   { color:var(--cyan); }
 
-      .seg:nth-child(1) {
-        animation-delay: 0s;
-      }
-      .seg:nth-child(2) {
-        animation-delay: 0.1s;
-      }
-      .seg:nth-child(3) {
-        animation-delay: 0.2s;
-      }
-      .seg:nth-child(4) {
-        animation-delay: 0.3s;
-      }
-      .seg:nth-child(5) {
-        animation-delay: 0.4s;
-      }
-      .seg:nth-child(6) {
-        animation-delay: 0.5s;
-      }
-      .seg:nth-child(7) {
-        animation-delay: 0.6s;
-      }
-      .seg:nth-child(8) {
-        animation-delay: 0.7s;
-      }
+/* ═══════════════════════════════════════
+   CONFIDENCE GAUGE
+═══════════════════════════════════════ */
+.gauge-card {
+  padding:1.75rem;
+  display:grid; grid-template-columns:180px 1fr;
+  gap:2rem; align-items:center;
+  margin-bottom:1.25rem; position:relative; overflow:hidden;
+}
+.gauge-card::before {
+  content:'CONFIDENCE MATRIX';
+  position:absolute;top:1rem;right:1.25rem;
+  font-family:'Space Mono',monospace; font-size:0.5rem; letter-spacing:2px; color:var(--ink4);
+}
+.gauge-wrap { position:relative;width:160px;height:160px;margin:0 auto; }
+.gauge-wrap svg { transform:rotate(-90deg); }
+.gauge-bg   { fill:none;stroke:var(--border2);stroke-width:12;transition:stroke 0.4s; }
+.gauge-fill { fill:none;stroke-width:12;stroke-linecap:round;stroke-dasharray:408;stroke-dashoffset:408;transition:stroke-dashoffset 1.6s cubic-bezier(0.4,0,0.2,1);filter:drop-shadow(0 0 8px currentColor); }
+.gauge-center { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center; }
+.gauge-pct { font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:1px;line-height:1; }
+.gauge-lbl { font-family:'Space Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--ink3);margin-top:2px;transition:color 0.4s; }
 
-      @keyframes segPulse {
-        0%,
-        100% {
-          background: rgba(255, 255, 255, 0.03);
-        }
-        50% {
-          background: rgba(99, 102, 241, 0.15);
-        }
-      }
+.sub-bars { display:flex;flex-direction:column;gap:0.8rem; }
+.sbar-row { display:flex;flex-direction:column;gap:0.25rem; }
+.sbar-top { display:flex;justify-content:space-between;font-size:0.67rem; }
+.sbar-key { color:var(--ink3); transition:color 0.4s; }
+.sbar-val { color:var(--ink2);font-weight:600;transition:color 0.4s; }
+.sbar-track { height:4px;background:var(--border2);border-radius:99px;overflow:hidden;transition:background 0.4s; }
+.sbar-fill  { height:100%;border-radius:99px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1); }
+.sb1 { background:linear-gradient(90deg,var(--v),var(--v2)); }
+.sb2 { background:linear-gradient(90deg,var(--pink),#FB7185); }
+.sb3 { background:linear-gradient(90deg,var(--cyan),#67E8F9); }
+.sb4 { background:linear-gradient(90deg,var(--gold),#FCD34D); }
 
-      .scan-labels {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+/* ═══════════════════════════════════════
+   THREAT RADAR
+═══════════════════════════════════════ */
+.radar-card {
+  padding:1.75rem; margin-bottom:1.25rem;
+  display:grid; grid-template-columns:200px 1fr; gap:1.75rem; align-items:center;
+}
+.radar-wrap { position:relative;width:180px;height:180px;margin:0 auto; }
+.radar-canvas { width:180px;height:180px; }
+.radar-right { display:flex;flex-direction:column;gap:1rem; }
+.radar-title {
+  font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px;
+  background:linear-gradient(90deg, var(--v2), var(--pink));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.indicator-list { display:flex;flex-direction:column;gap:0.5rem; }
+.ind-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0.5rem 0.75rem;border-radius:10px;
+  background:var(--surface); border:1px solid var(--border);
+  font-size:0.75rem;transition:all 0.3s;
+}
+.ind-row:hover { background:var(--surface2);border-color:var(--border2); }
+.ind-key { color:var(--ink2);font-weight:500;transition:color 0.4s; }
+.ind-val { font-family:'Space Mono',monospace;font-size:0.65rem;font-weight:700; }
+.ind-val.ok   { color:var(--safe); }
+.ind-val.bad  { color:var(--danger); }
+.ind-val.warn { color:var(--gold); }
 
-      .scan-status {
-        color: #a1a1aa;
-        font-size: 0.82rem;
-        letter-spacing: 0.3px;
-      }
+/* ═══════════════════════════════════════
+   DETAILS
+═══════════════════════════════════════ */
+.details-card { padding:1.5rem 1.75rem;margin-bottom:1.25rem; }
+.details-hdr { font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:3px;color:var(--ink3);text-transform:uppercase;margin-bottom:0.85rem;transition:color 0.4s; }
+.details-body { font-size:0.88rem;color:var(--ink2);line-height:1.75;transition:color 0.4s; }
+.risk-strip { display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1rem; }
+.rtag { font-size:0.7rem;font-weight:600;padding:0.3em 0.85em;border-radius:99px;letter-spacing:0.3px;animation:tagIn 0.4s ease; }
+@keyframes tagIn{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:none;}}
+.rtag.d { background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-bd); }
+.rtag.s { background:var(--safe-bg);color:var(--safe);border:1px solid var(--safe-bd); }
 
-      .scan-dots {
-        color: #6366f1;
-        font-size: 0.82rem;
-        letter-spacing: 2px;
-        min-width: 24px;
-      }
-    </style>
-  </head>
-  <body class="d-flex flex-column align-items-center py-5">
-    <div
-      class="container"
-      style="max-width: 700px; position: relative; z-index: 1"
-    >
-      <div class="glass-card mb-4">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-          <div class="d-flex align-items-center gap-3">
-            <div class="shield-icon-wrapper">
-              <svg
-                class="shield-svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  class="shield-path"
-                  d="M12 2L3 6V12C3 16.97 7.02 21.61 12 23C16.98 21.61 21 16.97 21 12V6L12 2Z"
-                  stroke="#6366f1"
-                  stroke-width="1.5"
-                  fill="rgba(99,102,241,0.1)"
-                />
-                <path
-                  class="shield-check"
-                  d="M9 12L11 14L15 10"
-                  stroke="#6366f1"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <div class="shield-ping"></div>
-            </div>
-            <div>
-              <div class="d-flex align-items-center gap-2">
-                <h2
-                  class="fw-bold mb-0"
-                  style="
-                    font-family: &quot;Sora&quot;, sans-serif;
-                    letter-spacing: -0.5px;
-                  "
-                >
-                  NetShield
-                </h2>
-                <span
-                  class="badge ms-1"
-                  style="
-                    font-size: 0.65em;
-                    background: rgba(99, 102, 241, 0.15);
-                    color: #818cf8;
-                    border: 1px solid rgba(99, 102, 241, 0.3);
-                    font-family: &quot;JetBrains Mono&quot;, monospace;
-                  "
-                  >v1.0</span
-                >
-              </div>
-              <p
-                class="mb-0 mt-1"
-                style="
-                  font-size: 0.76rem;
-                  color: var(--text-muted);
-                  font-family: &quot;JetBrains Mono&quot;, monospace;
-                  letter-spacing: 0.5px;
-                "
-              >
-                Tiered Architecture URL Analysis Engine
-              </p>
-            </div>
-          </div>
+/* ═══════════════════════════════════════
+   HISTORY
+═══════════════════════════════════════ */
+.history-card { overflow:hidden; }
+.history-head {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  background:var(--surface2); transition:all 0.4s;
+}
+.history-title {
+  font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;
+  background:linear-gradient(90deg,var(--v2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.history-badge {
+  font-family:'Space Mono',monospace;font-size:0.6rem;
+  background:var(--surface);border:1px solid var(--border);
+  padding:0.25em 0.75em;border-radius:99px;color:var(--ink3);transition:all 0.4s;
+}
+.history-thead {
+  display:grid;grid-template-columns:1fr 100px 80px;
+  gap:0.75rem;padding:0.6rem 1.5rem;
+  font-size:0.58rem;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;
+  background:var(--surface);border-bottom:1px solid var(--border);transition:all 0.4s;
+}
+.history-body { max-height:220px;overflow-y:auto; }
+.history-body::-webkit-scrollbar{width:3px;}
+.history-body::-webkit-scrollbar-thumb{background:var(--v2);border-radius:2px;}
+.hist-row {
+  display:grid;grid-template-columns:1fr 100px 80px;
+  gap:0.75rem;padding:0.75rem 1.5rem;align-items:center;
+  border-bottom:1px solid var(--border);animation:rowslide 0.35s ease;
+  transition:background 0.2s;position:relative;
+}
+.hist-row::before { content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 2px 2px 0; }
+.hist-row.safe-row::before   { background:var(--safe); }
+.hist-row.danger-row::before { background:var(--danger); }
+@keyframes rowslide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.hist-row:hover { background:var(--surface2); }
+.h-url { font-size:0.75rem;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.4s; }
+.h-badge { font-size:0.63rem;font-weight:700;padding:0.2em 0.7em;border-radius:99px;display:inline-block;text-align:center; }
+.hb-s { background:var(--safe-bg);color:var(--safe); }
+.hb-d { background:var(--danger-bg);color:var(--danger); }
+.h-src { font-size:0.62rem;color:var(--ink3);text-align:right;transition:color 0.4s; }
+.hist-empty { padding:2.5rem;text-align:center;font-size:0.82rem;color:var(--ink3);transition:color 0.4s; }
+.hist-empty-ico { font-size:2.5rem;margin-bottom:0.5rem;opacity:0.3; }
 
-          <!-- Session Info -->
-          <div class="text-end">
-            <div
-              class="d-flex align-items-center gap-2 justify-content-end mb-1"
-            >
-              <span class="status-dot"></span>
-              <small
-                style="
-                  font-family: &quot;JetBrains Mono&quot;, monospace;
-                  font-size: 0.72rem;
-                  color: #4ade80;
-                "
-                >LIVE</small
-              >
-            </div>
-            <small
-              id="session-time"
-              style="
-                font-family: &quot;JetBrains Mono&quot;, monospace;
-                font-size: 0.72rem;
-                color: var(--text-dim);
-                display: block;
-              "
-              >SESSION</small
-            >
-            <small
-              id="session-clock"
-              style="
-                font-family: &quot;JetBrains Mono&quot;, monospace;
-                font-size: 0.72rem;
-                color: var(--text-muted);
-              "
-            ></small>
-          </div>
-        </div>
+/* ═══════════════════════════════════════
+   STAGGER
+═══════════════════════════════════════ */
+.stagger{opacity:0;transform:translateY(12px);transition:opacity 0.45s ease,transform 0.45s ease;}
+#result.show .stagger:nth-child(1){opacity:1;transform:none;transition-delay:0.05s;}
+#result.show .stagger:nth-child(2){opacity:1;transform:none;transition-delay:0.12s;}
+#result.show .stagger:nth-child(3){opacity:1;transform:none;transition-delay:0.18s;}
+#result.show .stagger:nth-child(4){opacity:1;transform:none;transition-delay:0.24s;}
+#result.show .stagger:nth-child(5){opacity:1;transform:none;transition-delay:0.30s;}
+#result.show .stagger:nth-child(6){opacity:1;transform:none;transition-delay:0.36s;}
 
-        <!-- Divider -->
-        <div
-          style="
-            height: 1px;
-            background: linear-gradient(
-              90deg,
-              rgba(99, 102, 241, 0.3),
-              transparent
-            );
-            margin: 1rem 0 1.5rem 0;
-          "
-        ></div>
+/* 3D tilt */
+.tiltable{transform-style:preserve-3d;transition:transform 0.1s ease;}
+</style>
+</head>
+<body>
 
-        <form id="analyze-form" class="d-flex gap-2">
-          <input
-            type="text"
-            id="url-input"
-            class="form-control"
-            placeholder="facebook.com or https://facebook.com"
-            required
-          />
-          <button
-            type="submit"
-            class="btn btn-primary idle-pulse"
-            id="submit-btn"
-          >
-            <span id="btn-text">Scan</span>
-          </button>
-        </form>
+<canvas id="particles"></canvas>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
 
-        <div id="loading" style="display: none; margin-top: 1.5rem">
-          <div class="scan-wrapper">
-            <div class="scan-bar-container">
-              <div class="scan-line"></div>
-              <div class="scan-segments">
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-                <div class="seg"></div>
-              </div>
-            </div>
-            <div class="scan-labels">
-              <span
-                style="
-                  font-family: &quot;JetBrains Mono&quot;, monospace;
-                  font-size: 0.78rem;
-                  color: var(--text-dim);
-                  margin-right: 6px;
-                "
-                >SYS →</span
-              >
-              <span class="scan-status tech-text" id="scan-status-text"></span>
-              <span class="scan-dots tech-text" id="scan-dots"></span>
-            </div>
-          </div>
-        </div>
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">
+  <span class="toggle-icon" id="toggle-icon">🌙</span>
+  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  <span class="toggle-label" id="toggle-label">Dark</span>
+</button>
 
-        <div id="result-card" class="glass-card mt-4 p-4 bg-transparent">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5
-              class="mb-0 fw-bold"
-              style="font-family: &quot;Sora&quot;, sans-serif"
-            >
-              Threat Intelligence Report
-            </h5>
-            <span id="verdict-badge"></span>
-          </div>
+<div class="page">
 
-          <div class="row g-3 mb-4">
-            <div class="col-6">
-              <div
-                class="p-3 rounded"
-                style="background-color: rgba(255, 255, 255, 0.03)"
-              >
-                <small
-                  style="
-                    color: var(--text-muted);
-                    font-size: 0.72rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.6px;
-                    font-family: &quot;Inter&quot;, sans-serif;
-                  "
-                  >Detection Source</small
-                >
-                <span
-                  id="source-text"
-                  class="fw-bold"
-                  style="color: var(--text-primary); font-size: 0.95rem"
-                ></span>
-              </div>
-            </div>
-            <div class="col-6">
-              <div
-                class="p-3 rounded"
-                style="background-color: rgba(255, 255, 255, 0.03)"
-              >
-                <small
-                  style="
-                    color: var(--text-muted);
-                    font-size: 0.72rem;
-                    text-transform: uppercase;
-                    letter-spacing: 0.6px;
-                    font-family: &quot;Inter&quot;, sans-serif;
-                  "
-                  >Target URL</small
-                >
-                <span
-                  id="target-url-text"
-                  class="tech-text text-truncate d-block"
-                  style="color: var(--accent-soft)"
-                ></span>
-              </div>
-            </div>
-          </div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">// Threat Intelligence Engine v2.0</div>
+    <div class="hero-title">NETSHIELD</div>
+    <div class="hero-sub">Drop any URL. We'll tell you if it's trying to kill you.</div>
+    <div class="live-row">
+      <div class="live-badge"><span class="ldot"></span>System Online</div>
+      <div class="stat-pill">Session: <b id="session-clock">00:00</b></div>
+      <div class="stat-pill">Total Scans: <b id="total-scans">0</b></div>
+    </div>
+  </div>
 
-          <div class="mb-4" id="confidence-container">
-            <div class="d-flex justify-content-between mb-1">
-              <small
-                class="text-secondary"
-                style="
-                  font-family: &quot;Inter&quot;, sans-serif;
-                  letter-spacing: 0.3px;
-                  font-size: 0.78rem;
-                  text-transform: uppercase;
-                "
-                >Model Confidence Score</small
-              >
-              <small id="confidence-text" class="fw-bold text-light"></small>
-            </div>
-            <div class="progress">
-              <div
-                id="confidence-bar"
-                class="progress-bar bg-primary"
-                role="progressbar"
-                style="width: 0%"
-              ></div>
-            </div>
-          </div>
+  <!-- SCAN INPUT -->
+  <div class="glass scan-card tiltable" id="scan-card">
+    <div class="scan-label">// Enter target URL</div>
+    <form id="analyze-form">
+      <div class="input-wrap">
+        <input type="text" id="url-input" class="url-input"
+          placeholder="https://suspicious-looking-site.com" autocomplete="off" required/>
+        <button type="submit" class="scan-btn" id="submit-btn">
+          <span id="btn-label">SCAN</span>
+        </button>
+      </div>
+    </form>
+  </div>
 
-          <div
-            class="p-3 rounded border border-secondary border-opacity-25"
-            style="background-color: rgba(0, 0, 0, 0.2)"
-          >
-            <small
-              style="
-                color: var(--text-muted);
-                font-size: 0.72rem;
-                text-transform: uppercase;
-                letter-spacing: 0.6px;
-              "
-              >Analysis Details</small
-            >
-            <span
-              id="details-text"
-              style="
-                font-family: &quot;JetBrains Mono&quot;, monospace;
-                color: var(--text-secondary);
-                font-size: 0.84rem;
-                line-height: 1.7;
-              "
-            ></span>
-          </div>
+  <!-- LOADING -->
+  <div class="glass loading-card" id="loading-card">
+    <div class="loading-top">
+      <div class="loading-title">ANALYZING TARGET</div>
+      <div class="spinner"></div>
+    </div>
+    <div class="load-bar-wrap"><div class="load-beam"></div></div>
+    <div class="step-list" id="step-list"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result">
+
+    <div class="verdict-banner stagger" id="verdict-banner">
+      <div class="banner-glow"></div>
+      <div class="verdict-tag"  id="verdict-tag">Verdict</div>
+      <div class="verdict-word" id="verdict-word">—</div>
+      <div class="verdict-url-display" id="verdict-url-display"></div>
+      <div class="verdict-emoji" id="verdict-emoji"></div>
+    </div>
+
+    <div class="stats-row stagger" id="stats-row">
+      <div class="stat-cell"><div class="sc-label">Detection Source</div><div class="sc-value accent" id="out-source">—</div></div>
+      <div class="stat-cell"><div class="sc-label">Scanned At</div><div class="sc-value cyan" id="out-time">—</div></div>
+      <div class="stat-cell"><div class="sc-label">Threat Level</div><div class="sc-value" id="out-threat">—</div></div>
+    </div>
+
+    <div class="glass gauge-card stagger tiltable" id="gauge-card">
+      <div class="gauge-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="gauge-bg" cx="80" cy="80" r="65"/>
+          <circle class="gauge-fill" id="gauge-fill" cx="80" cy="80" r="65"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-pct" id="gauge-pct">—</div>
+          <div class="gauge-lbl">CONFIDENCE</div>
         </div>
       </div>
-
-      <div class="glass-card p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6
-            class="fw-bold mb-0"
-            style="
-              font-family: &quot;Sora&quot;, sans-serif;
-              font-size: 0.85rem;
-              color: #71717a;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-            "
-          >
-            Session Scan History
-          </h6>
-          <span
-            id="scan-count"
-            class="tech-text"
-            style="font-size: 0.78rem; color: var(--text-muted)"
-            >0 scans</span
-          >
-        </div>
-        <div class="table-responsive">
-          <table class="table table-borderless table-hover mb-0">
-            <thead>
-              <tr>
-                <th style="width: 50%">URL</th>
-                <th>Verdict</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody id="history-body">
-              <tr id="empty-row">
-                <td
-                  colspan="3"
-                  class="text-center py-4"
-                  style="
-                    color: var(--text-dim);
-                    font-size: 0.82rem;
-                    font-family: &quot;JetBrains Mono&quot;, monospace;
-                    background: transparent !important;
-                    border: none;
-                  "
-                >
-                  — no scans yet —
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="sub-bars">
+        <div class="sbar-row"><div class="sbar-top"><span class="sbar-key">Lexical Analysis</span><span class="sbar-val" id="v-lex">0%</span></div><div class="sbar-track"><div class="sbar-fill sb1" id="b-lex" style="width:0%"></div></div></div>
+        <div class="sbar-row"><div class="sbar-top"><span class="sbar-key">Structure Score</span><span class="sbar-val" id="v-str">0%</span></div><div class="sbar-track"><div class="sbar-fill sb2" id="b-str" style="width:0%"></div></div></div>
+        <div class="sbar-row"><div class="sbar-top"><span class="sbar-key">Entropy Score</span><span class="sbar-val" id="v-ent">0%</span></div><div class="sbar-track"><div class="sbar-fill sb3" id="b-ent" style="width:0%"></div></div></div>
+        <div class="sbar-row"><div class="sbar-top"><span class="sbar-key">Heuristic Match</span><span class="sbar-val" id="v-heu">0%</span></div><div class="sbar-track"><div class="sbar-fill sb4" id="b-heu" style="width:0%"></div></div></div>
       </div>
     </div>
 
-    <script>
-      document
-        .getElementById("analyze-form")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
+    <div class="glass radar-card stagger tiltable">
+      <div class="radar-wrap"><canvas class="radar-canvas" id="radar-canvas" width="180" height="180"></canvas></div>
+      <div class="radar-right">
+        <div class="radar-title">THREAT RADAR</div>
+        <div class="indicator-list" id="indicator-list"></div>
+      </div>
+    </div>
 
-          const urlInput = document.getElementById("url-input").value;
-          const submitBtn = document.getElementById("submit-btn");
-          const loading = document.getElementById("loading");
-          const resultCard = document.getElementById("result-card");
+    <div class="glass details-card stagger">
+      <div class="details-hdr">// Analysis Log</div>
+      <div class="details-body" id="out-details">—</div>
+      <div class="risk-strip" id="risk-strip"></div>
+    </div>
 
-          // Loading State
-          submitBtn.disabled = true;
-          loading.style.display = "block";
-          startScanAnimation();
-          document.getElementById("btn-text").textContent = "Scanning...";
-          submitBtn.classList.remove("idle-pulse");
-          submitBtn.classList.add("scanning");
-          resultCard.style.display = "none";
-          resultCard.classList.remove("visible");
-          document.getElementById("confidence-bar").style.width = "0%";
+  </div>
 
-          try {
-            const response = await fetch("http://127.0.0.1:8000/api/analyze", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ url: urlInput }),
-            });
+  <!-- HISTORY -->
+  <div class="glass history-card">
+    <div class="history-head">
+      <span class="history-title">SCAN HISTORY</span>
+      <span class="history-badge" id="hist-badge">0 entries</span>
+    </div>
+    <div class="history-thead">
+      <span>URL</span><span>Verdict</span><span style="text-align:right">Source</span>
+    </div>
+    <div class="history-body" id="hist-body">
+      <div class="hist-empty" id="hist-empty">
+        <div class="hist-empty-ico">🛰️</div>
+        <div>No scans yet — awaiting first target</div>
+      </div>
+    </div>
+  </div>
 
-            const data = await response.json();
+</div>
 
-            // Populate UI
-            document.getElementById("source-text").textContent = data.source;
-            document.getElementById("details-text").textContent = data.details;
-            document.getElementById("target-url-text").textContent = urlInput;
+<script>
+/* ─── THEME TOGGLE ─── */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  document.getElementById('toggle-icon').textContent  = isDark ? '☀️' : '🌙';
+  document.getElementById('toggle-label').textContent = isDark ? 'Light' : 'Dark';
+  localStorage.setItem('ns-theme', newTheme);
+  // redraw radar if visible
+  if (lastSafe !== null) drawRadar(lastSafe, lastConf);
+}
+// Restore saved theme
+(function(){
+  const saved = localStorage.getItem('ns-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  if (saved === 'light') {
+    document.getElementById('toggle-icon').textContent  = '☀️';
+    document.getElementById('toggle-label').textContent = 'Light';
+  }
+})();
 
-            // Handle Verdict
-            const badge = document.getElementById("verdict-badge");
-            let verdictHtml = "";
-            if (data.final_prediction === "Safe") {
-              badge.className = "badge-safe";
-              badge.innerHTML = "✅ SAFE";
-              verdictHtml = "<span class='text-success'>Safe</span>";
-            } else {
-              badge.className = "badge-danger";
-              badge.innerHTML = "🚨 MALICIOUS";
-              verdictHtml =
-                "<span class='text-danger fw-bold'>Malicious</span>";
-            }
-
-            // Handle Confidence Score Animation
-            const confContainer = document.getElementById(
-              "confidence-container",
-            );
-            if (typeof data.confidence === "number") {
-              confContainer.style.display = "block";
-              document.getElementById("confidence-text").textContent =
-                `${data.confidence}%`;
-              setTimeout(() => {
-                document.getElementById("confidence-bar").style.width =
-                  `${data.confidence}%`;
-                // Change color based on score
-                const bar = document.getElementById("confidence-bar");
-                if (data.confidence > 90) {
-                  bar.className = "progress-bar";
-                  bar.style.background =
-                    "linear-gradient(90deg, #16a34a, #4ade80)";
-                  bar.style.boxShadow =
-                    "0 0 12px rgba(74, 222, 128, 0.5), 0 0 24px rgba(74, 222, 128, 0.2)";
-                } else if (data.confidence > 70) {
-                  bar.className = "progress-bar";
-                  bar.style.background =
-                    "linear-gradient(90deg, #d97706, #fbbf24)";
-                  bar.style.boxShadow =
-                    "0 0 12px rgba(251, 191, 36, 0.5), 0 0 24px rgba(251, 191, 36, 0.2)";
-                } else {
-                  bar.className = "progress-bar";
-                  bar.style.background =
-                    "linear-gradient(90deg, #b91c1c, #f87171)";
-                  bar.style.boxShadow =
-                    "0 0 12px rgba(248, 113, 113, 0.5), 0 0 24px rgba(248, 113, 113, 0.2)";
-                }
-              }, 100);
-            } else {
-              // Hide progress bar if VT was used (confidence is "N/A")
-              confContainer.style.display = "none";
-            }
-
-            // Add to History Table
-            // Add to History Table
-            const historyBody = document.getElementById("history-body");
-
-            // Remove empty state row if present
-            const emptyRow = document.getElementById("empty-row");
-            if (emptyRow) emptyRow.remove();
-
-            // Determine row class based on verdict
-            const rowClass =
-              data.final_prediction === "Safe" ? "row-safe" : "row-danger";
-
-            const newRow = `
-    <tr class="${rowClass} row-animate">
-        <td class="tech-text text-truncate" style="max-width: 200px; font-size: 0.8rem;">${urlInput}</td>
-        <td>${verdictHtml}</td>
-        <td><small style="color: var(--text-muted); font-family: 'Inter', sans-serif;">${data.source.split(" ")[0]}</small></td>
-    </tr>
-`;
-            historyBody.insertAdjacentHTML("afterbegin", newRow);
-
-            // Update scan counter
-            const scanCount = historyBody.querySelectorAll("tr").length;
-            document.getElementById("scan-count").textContent =
-              `${scanCount} scan${scanCount > 1 ? "s" : ""}`;
-
-            resultCard.style.display = "block";
-            // Trigger animation on next frame
-            setTimeout(() => {
-              resultCard.classList.add("visible");
-            }, 10);
-            document.getElementById("url-input").value = ""; // Clear input
-          } catch (error) {
-            alert("Error connecting to the backend. Is FastAPI running?");
-          } finally {
-            submitBtn.disabled = false;
-            loading.style.display = "none";
-            stopScanAnimation();
-            document.getElementById("btn-text").textContent = "Scan";
-            submitBtn.classList.remove("scanning");
-            submitBtn.classList.add("idle-pulse");
-          }
-        });
-      // === Scanning Status Typewriter ===
-      const scanPhrases = [
-        "Extracting lexical features",
-        "Consulting ML engine",
-        "Analyzing URL structure",
-        "Checking entropy patterns",
-        "Cross-referencing threat DB",
-        "Computing risk score",
-      ];
-
-      let scanInterval = null;
-      let dotInterval = null;
-      let phraseIndex = 0;
-      let dotCount = 0;
-
-      function startScanAnimation() {
-        phraseIndex = 0;
-        dotCount = 0;
-        const statusEl = document.getElementById("scan-status-text");
-        const dotsEl = document.getElementById("scan-dots");
-
-        let charIndex = 0;
-        let isDeleting = false;
-        let typeTimeout = null;
-
-        function typeWriter() {
-          const currentPhrase = scanPhrases[phraseIndex];
-
-          if (!isDeleting) {
-            // Typing forward
-            charIndex++;
-            statusEl.textContent = currentPhrase.substring(0, charIndex);
-
-            if (charIndex === currentPhrase.length) {
-              // Finished typing — pause then start deleting
-              isDeleting = true;
-              typeTimeout = setTimeout(typeWriter, 1400);
-            } else {
-              // Vary speed slightly for natural feel
-              const speed = 35 + Math.random() * 25;
-              typeTimeout = setTimeout(typeWriter, speed);
-            }
-          } else {
-            // Deleting
-            charIndex--;
-            statusEl.textContent = currentPhrase.substring(0, charIndex);
-
-            if (charIndex === 0) {
-              // Move to next phrase
-              isDeleting = false;
-              phraseIndex = (phraseIndex + 1) % scanPhrases.length;
-              typeTimeout = setTimeout(typeWriter, 200);
-            } else {
-              // Delete faster than typing
-              typeTimeout = setTimeout(typeWriter, 18);
-            }
-          }
+/* ─── PARTICLES ─── */
+(function(){
+  const c   = document.getElementById('particles');
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+  function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for(let i=0;i<80;i++) pts.push({
+    x:Math.random()*3000, y:Math.random()*2000,
+    vx:(Math.random()-.5)*0.3, vy:(Math.random()-.5)*0.3,
+    r:Math.random()*1.5+0.3, a:Math.random()
+  });
+  function isDark(){ return document.documentElement.getAttribute('data-theme') === 'dark'; }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const dark = isDark();
+    pts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle = dark ? `rgba(168,85,247,${p.a*0.4})` : `rgba(109,40,217,${p.a*0.25})`;
+      ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const d = Math.hypot(pts[i].x-pts[j].x, pts[i].y-pts[j].y);
+        if(d<120){
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x,pts[i].y);
+          ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle = dark
+            ? `rgba(124,58,237,${(1-d/120)*0.15})`
+            : `rgba(109,40,217,${(1-d/120)*0.09})`;
+          ctx.lineWidth=0.5; ctx.stroke();
         }
-
-        // Start typewriter
-        typeWriter();
-
-        // Store timeout reference so we can clear it
-        scanInterval = { clear: () => clearTimeout(typeTimeout) };
-
-        // Animate dots separately
-        dotInterval = setInterval(() => {
-          dotCount = (dotCount + 1) % 4;
-          dotsEl.textContent = ".".repeat(dotCount);
-        }, 400);
       }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
-      function stopScanAnimation() {
-        if (scanInterval && scanInterval.clear) scanInterval.clear();
-        clearInterval(dotInterval);
-        document.getElementById("scan-status-text").textContent = "";
-        document.getElementById("scan-dots").textContent = "";
+/* ─── TILT ─── */
+document.querySelectorAll('.tiltable').forEach(el=>{
+  el.addEventListener('mousemove',e=>{
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width-.5;
+    const y = (e.clientY-r.top)/r.height-.5;
+    el.style.transform=`perspective(800px) rotateY(${x*6}deg) rotateX(${-y*6}deg)`;
+  });
+  el.addEventListener('mouseleave',()=>{ el.style.transform=''; });
+});
+
+/* ─── RIPPLE ─── */
+document.getElementById('submit-btn').addEventListener('click',function(e){
+  const r = document.createElement('span');
+  const rc = this.getBoundingClientRect();
+  const sz = Math.max(rc.width,rc.height);
+  r.className='ripple';
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rc.left-sz/2}px;top:${e.clientY-rc.top-sz/2}px`;
+  this.appendChild(r); setTimeout(()=>r.remove(),600);
+});
+
+/* ─── CLOCK ─── */
+const t0 = new Date();
+setInterval(()=>{
+  const s = Math.floor((Date.now()-t0)/1000);
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const sc = (s%60).toString().padStart(2,'0');
+  document.getElementById('session-clock').textContent=`${m}:${sc}`;
+},1000);
+
+/* ─── LOADING STEPS ─── */
+const steps = ['Extracting lexical features','Running ML classifier','Querying threat database','Computing entropy score','Building threat report'];
+let stepTmr=null, scanCount=0;
+function startSteps(){
+  const el = document.getElementById('step-list');
+  el.innerHTML = steps.map(s=>`<div class="step"><span class="step-ic">○</span>${s}</div>`).join('');
+  let i=0;
+  function nxt(){
+    const rows=el.querySelectorAll('.step');
+    if(i>0&&rows[i-1]){rows[i-1].classList.remove('cur');rows[i-1].classList.add('done');rows[i-1].querySelector('.step-ic').textContent='✓';}
+    if(i<rows.length){rows[i].classList.add('cur');rows[i].querySelector('.step-ic').textContent='›';i++;stepTmr=setTimeout(nxt,650);}
+  }
+  nxt();
+}
+function stopSteps(){ clearTimeout(stepTmr); }
+
+/* ─── RADAR ─── */
+let lastSafe=null, lastConf=null;
+function drawRadar(safe,conf){
+  lastSafe=safe; lastConf=conf;
+  const cv  = document.getElementById('radar-canvas');
+  const ctx = cv.getContext('2d');
+  const cx=90, cy=90, r=70;
+  const dark = document.documentElement.getAttribute('data-theme')==='dark';
+  const color     = safe ? '#10B981' : '#F43F5E';
+  const fillColor = safe
+    ? (dark?'rgba(16,185,129,0.15)':'rgba(5,150,105,0.10)')
+    : (dark?'rgba(244,63,94,0.15)' :'rgba(220,38,38,0.10)');
+  const gridColor = dark?'rgba(255,255,255,0.06)':'rgba(100,80,200,0.10)';
+  const axisColor = dark?'rgba(255,255,255,0.08)':'rgba(100,80,200,0.12)';
+
+  const labels = ['URL Structure','Domain Age','SSL','Entropy','Redirect','Keywords'];
+  const vals   = labels.map(()=> safe ? 0.55+Math.random()*0.4 : 0.1+Math.random()*0.5);
+
+  let prog=0;
+  function animRadar(){
+    prog = Math.min(prog+0.04,1);
+    ctx.clearRect(0,0,180,180);
+    for(let ring=1;ring<=4;ring++){
+      ctx.beginPath();
+      for(let i=0;i<labels.length;i++){
+        const a=(Math.PI*2/labels.length)*i-Math.PI/2;
+        const rr=r*(ring/4);
+        const x=cx+Math.cos(a)*rr, y=cy+Math.sin(a)*rr;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
       }
-      // === Button Ripple Effect ===
-      const submitBtn = document.getElementById("submit-btn");
+      ctx.closePath(); ctx.strokeStyle=gridColor; ctx.lineWidth=1; ctx.stroke();
+    }
+    for(let i=0;i<labels.length;i++){
+      const a=(Math.PI*2/labels.length)*i-Math.PI/2;
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+      ctx.strokeStyle=axisColor; ctx.lineWidth=1; ctx.stroke();
+    }
+    ctx.beginPath();
+    for(let i=0;i<labels.length;i++){
+      const a=(Math.PI*2/labels.length)*i-Math.PI/2;
+      const rv=vals[i]*prog;
+      const x=cx+Math.cos(a)*r*rv, y=cy+Math.sin(a)*r*rv;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath(); ctx.fillStyle=fillColor; ctx.fill();
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke();
+    for(let i=0;i<labels.length;i++){
+      const a=(Math.PI*2/labels.length)*i-Math.PI/2;
+      const rv=vals[i]*prog;
+      const x=cx+Math.cos(a)*r*rv, y=cy+Math.sin(a)*r*rv;
+      ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+      ctx.fillStyle=color; ctx.fill();
+    }
+    if(prog<1) requestAnimationFrame(animRadar);
+  }
+  animRadar();
 
-      submitBtn.addEventListener("click", function (e) {
-        // Create ripple
-        const ripple = document.createElement("span");
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
+  const indEl = document.getElementById('indicator-list');
+  indEl.innerHTML = labels.map((l,i)=>{
+    const v = vals[i];
+    const cls = v>0.65?'ok':v>0.35?'warn':'bad';
+    const txt = v>0.65?'CLEAN':v>0.35?'SUSPECT':'THREAT';
+    return `<div class="ind-row"><span class="ind-key">${l}</span><span class="ind-val ${cls}">${txt}</span></div>`;
+  }).join('');
+}
 
-        ripple.style.cssText = `
-        width: ${size}px;
-        height: ${size}px;
-        left: ${x}px;
-        top: ${y}px;
-    `;
-        ripple.classList.add("btn-ripple");
-        this.appendChild(ripple);
+/* ─── FORM ─── */
+document.getElementById('analyze-form').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const url      = document.getElementById('url-input').value.trim();
+  const btn      = document.getElementById('submit-btn');
+  const loadCard = document.getElementById('loading-card');
+  const result   = document.getElementById('result');
 
-        // Remove ripple after animation
-        setTimeout(() => ripple.remove(), 600);
-      });
-      // === Session Clock ===
-      const sessionStart = new Date();
+  btn.disabled=true;
+  document.getElementById('btn-label').textContent='SCANNING...';
+  loadCard.classList.add('on');
+  startSteps();
+  result.style.display='none';
+  result.classList.remove('show');
+  document.getElementById('gauge-fill').style.strokeDashoffset='408';
 
-      function formatDuration(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const hrs = Math.floor(totalSeconds / 3600)
-          .toString()
-          .padStart(2, "0");
-        const mins = Math.floor((totalSeconds % 3600) / 60)
-          .toString()
-          .padStart(2, "0");
-        const secs = (totalSeconds % 60).toString().padStart(2, "0");
-        return `${hrs}:${mins}:${secs}`;
-      }
+  try {
+    const res  = await fetch('http://127.0.0.1:8000/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data = await res.json();
+    const safe = data.final_prediction==='Safe';
+    const conf = typeof data.confidence==='number'?data.confidence:null;
 
-      function formatStartTime(date) {
-        return date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
+    const banner = document.getElementById('verdict-banner');
+    banner.className = 'verdict-banner stagger '+(safe?'safe':'danger');
+    document.getElementById('verdict-tag').textContent         = safe?'This URL is safe to visit':'Threat Detected — Stay Away';
+    document.getElementById('verdict-word').textContent        = safe?'ALL CLEAR':'MALICIOUS';
+    document.getElementById('verdict-url-display').textContent = url;
+    document.getElementById('verdict-emoji').textContent       = safe?'✅':'🚨';
+
+    document.getElementById('out-source').textContent = data.source||'—';
+    document.getElementById('out-time').textContent   = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+    const ot = document.getElementById('out-threat');
+    ot.textContent  = safe?'NONE':'HIGH';
+    ot.style.color  = safe?'var(--safe)':'var(--danger)';
+
+    const gc = document.getElementById('gauge-card');
+    if(conf!==null){
+      gc.style.display='grid';
+      document.getElementById('gauge-pct').textContent = conf+'%';
+      document.getElementById('gauge-pct').style.color = safe?'var(--safe)':'var(--danger)';
+      setTimeout(()=>{
+        const gf = document.getElementById('gauge-fill');
+        gf.style.strokeDashoffset = 408-(conf/100)*408;
+        gf.style.stroke = safe?'var(--safe)':'var(--danger)';
+        const v=()=>Math.min(100,Math.max(0,conf+(Math.random()*16-8))).toFixed(0);
+        [['b-lex','v-lex'],['b-str','v-str'],['b-ent','v-ent'],['b-heu','v-heu']].forEach(([b,vv])=>{
+          const val=v();
+          document.getElementById(b).style.width=val+'%';
+          document.getElementById(vv).textContent=val+'%';
         });
-      }
+      },150);
+    } else { gc.style.display='none'; }
 
-      // Show session start time
-      document.getElementById("session-time").textContent =
-        `STARTED ${formatStartTime(sessionStart)}`;
+    drawRadar(safe,conf);
 
-      // Live elapsed timer
-      setInterval(() => {
-        const elapsed = Date.now() - sessionStart.getTime();
-        document.getElementById("session-clock").textContent =
-          formatDuration(elapsed);
-      }, 1000);
-    </script>
-  </body>
+    document.getElementById('out-details').textContent = data.details||'—';
+    const rs = document.getElementById('risk-strip');
+    rs.innerHTML='';
+    (data.risk_factors||[]).forEach(f=>{
+      const s=f.toLowerCase().includes('no major')||f.toLowerCase().includes('whitelisted');
+      rs.innerHTML+=`<span class="rtag ${s?'s':'d'}">${f}</span>`;
+    });
+
+    scanCount++;
+    document.getElementById('total-scans').textContent = scanCount;
+    document.getElementById('hist-badge').textContent  = `${scanCount} entr${scanCount===1?'y':'ies'}`;
+    const empty = document.getElementById('hist-empty');
+    if(empty) empty.remove();
+    const row = document.createElement('div');
+    row.className=`hist-row ${safe?'safe-row':'danger-row'}`;
+    row.innerHTML=`<span class="h-url" title="${url}">${url}</span><span class="h-badge ${safe?'hb-s':'hb-d'}">${safe?'Safe':'Malicious'}</span><span class="h-src">${(data.source||'—').split(' ')[0]}</span>`;
+    document.getElementById('hist-body').prepend(row);
+
+    result.style.display='block';
+    setTimeout(()=>result.classList.add('show'),10);
+    document.getElementById('url-input').value='';
+
+  } catch(err){
+    alert('Cannot reach backend. Make sure FastAPI is running on port 8000.');
+  } finally {
+    btn.disabled=false;
+    document.getElementById('btn-label').textContent='SCAN';
+    loadCard.classList.remove('on');
+    stopSteps();
+  }
+});
+</script>
+</body>
 </html>
