@@ -9,30 +9,12 @@ from backend.core import virustotal
 def analyze_url(url: str) -> dict:
     """
     NetShield Tiered Security Pipeline
-    Tier 0 -> DGA Heuristic Tripwire
     Tier 1 -> Local ML (Phishing)
     Tier 2 -> VirusTotal (Fallback)
     """
     
     
     features = feature_extractor.extract_features(url)
-    
-    if features.get('unusual_bigrams', 0) >= 1 or features.get('unique_char_density', 0) >= 0.75:
-        vt_result = virustotal.check_virustotal(url)
-        if vt_result and "error" not in vt_result and vt_result.get("prediction") != "Unknown":
-            return {
-                "url": url, "final_prediction": vt_result["prediction"],
-                "confidence": "External Verification", "source": "Tier 0 Tripwire -> VirusTotal",
-                "risk_factors": ["High Entropy", "Unusual Character Sequence"],
-                "details": "High DGA probability detected. Forced API verification."
-            }
-        else:
-            return {
-                "url": url, "final_prediction": "Malicious",
-                "confidence": 85.0, "source": "Local Heuristic (DGA Tripwire)",
-                "risk_factors": ["High Entropy", "Unusual Character Sequence"],
-                "details": "Anomalous character sequences detected. Likely DGA."
-            }
 
     
     prediction, confidence, reasons = ml_model.predict_url_full(url, features)

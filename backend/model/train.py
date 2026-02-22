@@ -66,26 +66,6 @@ def train_and_save_model():
 
     df = pd.concat([df, extra_df], ignore_index=True)
     
-    # These teach the Random Forest what high-entropy, unusual bigrams look like.
-    extra_dga_urls = [
-        # Cryptolocker & Generic DGAs
-        "xeogrhxquuubt.com", "intgmxdeadnxuyla.com", "xozekcj.biz",
-        "dfigbdf.com", "qweqweqwe.net", "zxcvbnm.com",
-        # Necurs Botnet DGAs
-        "jnhutiiv.tv", "fqoxibdvbycnsappxc.nu", "aodxytmxlb.com",
-        "dookmswemexltbsual.su", "opcalvweliiisuhxarkr.bit",
-        # Angler Exploit Kit DGAs
-        "v6pnsc80ll.com", "jvrmmkyejdeylcq.com", "ceunnfohgwjyaua9h.com",
-        "mbsiglgfqih2.com", "gsjznqcohiko.com", "dlnoyyvqsozhh.com"
-    ]
-
-    extra_dga_df = pd.DataFrame({
-        "url": extra_dga_urls,
-        "type": "dga" # Your script maps anything not 'benign' to 1 (Malicious)
-    })
-
-    df = pd.concat([df, extra_dga_df], ignore_index=True)
-    print(f"Added {len(extra_dga_urls)} real DGA domains for training.")
     
     print(f"Total URLs: {len(df)}")
     print(df['type'].value_counts())
