@@ -3,13 +3,14 @@ import requests
 import base64
 from dotenv import load_dotenv
 
-load_dotenv()
+dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+load_dotenv(dotenv_path)
 
 def check_virustotal(url: str) -> dict:
     """
     Checks a URL against VirusTotal's v3 API by retrieving its existing report.
     """
-    api_key = os.getenv("VIRUS_TOTAL_API_KEY")
+    api_key = os.getenv("VIRUSTOTAL_API_KEY")
     if not api_key:
         return {"error": "VirusTotal API key is missing. Check your .env file."}
 
