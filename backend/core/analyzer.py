@@ -1,4 +1,4 @@
-import argparse
+import argparse # for comamand line testing for the analyzer module
 import json
 import whois
 import datetime
@@ -29,7 +29,7 @@ def check_whois_risk(url: str) -> tuple:
         w = whois.whois(domain)
         reasons = []
 
-        # --- Domain Age Check ---
+        # Domain Age Check 
         creation_date = w.creation_date
         if not creation_date:
             return "unknown", None, [], "No creation date found in WHOIS"
@@ -48,7 +48,7 @@ def check_whois_risk(url: str) -> tuple:
         else:
             risk_level = "none"
 
-        # --- Registration Length Check ---
+        # Registration Length Check 
         expiration_date = w.expiration_date
         if expiration_date:
             if isinstance(expiration_date, list):
@@ -68,14 +68,11 @@ def check_whois_risk(url: str) -> tuple:
 def analyze_url(url: str) -> dict:
     """
     NetShield Tiered Security Pipeline
-    Tier 0 -> WHOIS Domain Age (Newly Registered Domain check)
+    Tier 0 -> DNS Lookup (If the domain doesn't resolve, it's not real - flag as Invalid) & WHOIS Domain Age (Newly Registered Domain check)
     Tier 1 -> Local ML (Phishing)
-    Tier 2 -> VirusTotal (Fallback)
+    Tier 2 -> VirusTotal
     """
-    
-     # TIER -1: DNS Lookup
-    # If the domain doesn't resolve, it's not real — flag as Invalid.
-    # ----------------------------------------------------------------
+    # Tier 0 -> DNS Lookup
     resolves, ip, dns_error = dns_checker.check_dns(url)
 
     if not resolves:
@@ -104,7 +101,7 @@ def analyze_url(url: str) -> dict:
     # Medium risk reasons get carried forward and merged into ML results
     extra_risk_factors = whois_reasons if whois_risk == "medium" else []
     
-    # local ML prediction
+    # Tier 1 -> Local ML Prediction
     features = feature_extractor.extract_features(url)
     
     prediction, confidence, reasons = ml_model.predict_url_full(url, features)
@@ -124,7 +121,7 @@ def analyze_url(url: str) -> dict:
         }
 
     
-    # virus total check
+    # Tier 2 -> Virus Total API check
     vt_result = virustotal.check_virustotal(url)
 
     # If VirusTotal fails : fallback to ML
@@ -161,6 +158,7 @@ def analyze_url(url: str) -> dict:
 
 
 
+# below code is for command line analysis for this file.
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NetShield URL Analyzer - CLI Testing")
     parser.add_argument("-u", "--url", required=True, help="The URL string you want to analyze")
