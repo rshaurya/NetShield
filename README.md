@@ -190,11 +190,7 @@ BTech CSE Student | Backend and frontend
 **Shaurya Pethe**  
 BTech CSE (AIML) Student | Backend pipelines and ML  
 **Pratik Kumawat**  
-BTech CSE Student | Backend and ML research  
-**Archie Ayush**  
-BTech CSE Student | Frontend Design  
-
-
+BTech CSE Student | Backend and ML research   
 
 ---
 
