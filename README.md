@@ -186,11 +186,14 @@ This tool provides automated analysis but should **not** replace professional cy
 This project was made successfull with the collaborative efforts of our team.
 
 **Deepesh Goyal**  
-BTech CSE Student | Backend and Frontend Interaction
+BTech CSE Student | Backend and Frontend interaction
+
 **Shaurya Pethe**  
-BTech CSE (AIML) Student | Backend pipelines and ML  
+BTech CSE (AIML) Student | Backend pipelines and ML
+
 **Pratik Kumawat**  
 BTech CSE Student | Backend and ML research   
+
 **Archie Ayush**  
 BTech CSE Student | Frontend
 
